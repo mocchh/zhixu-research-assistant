@@ -149,6 +149,27 @@ def main() -> None:
         app.state.config.path.unlink(missing_ok=True)
         return {"ok": True}
 
+    # Explicit gates let reload tests interrupt a request that is known to be
+    # waiting on the server, without relying on a machine-dependent sleep.
+    session_refresh_gates: dict[str, tuple[asyncio.Event, asyncio.Event]] = {}
+
+    @app.post("/__e2e__/session-refresh-gates/{key}")
+    async def create_session_refresh_gate(key: str):
+        session_refresh_gates[key] = (asyncio.Event(), asyncio.Event())
+        return {"ok": True}
+
+    @app.get("/__e2e__/session-refresh-gates/{key}")
+    async def session_refresh_gate_status(key: str):
+        gate = session_refresh_gates.get(key)
+        return {"entered": bool(gate and gate[1].is_set())}
+
+    @app.delete("/__e2e__/session-refresh-gates/{key}")
+    async def release_session_refresh_gate(key: str):
+        gate = session_refresh_gates.pop(key, None)
+        if gate:
+            gate[0].set()
+        return {"ok": True}
+
     @app.post("/__e2e__/model/chat/completions")
     async def local_model(request: Request):
         # A local protocol fixture tests the real HTTP client, not model quality.
@@ -163,7 +184,7 @@ def main() -> None:
     app.router.routes[:] = (app.router.routes[production_route_count:]
                            + app.router.routes[:production_route_count])
 
-    class ControlledChatLatency:
+    class ControlledLatency:
         def __init__(self, app):
             self.app = app
 
@@ -173,9 +194,19 @@ def main() -> None:
             if (scope["type"] == "http" and scope["path"] == "/api/chat"
                     and dict(scope.get("headers", [])).get(b"x-e2e-delay") == b"yes"):
                 await asyncio.sleep(1.5)
+            if scope["type"] == "http" and scope["method"] == "GET" and scope["path"] == "/api/sessions":
+                key = dict(scope.get("headers", [])).get(b"x-e2e-session-gate", b"").decode("ascii")
+                gate = session_refresh_gates.get(key)
+                if gate:
+                    gate[1].set()
+                    try:
+                        await asyncio.wait_for(gate[0].wait(), timeout=30)
+                    except asyncio.TimeoutError:
+                        # Bound cleanup if a test process dies before releasing.
+                        pass
             await self.app(scope, receive, send)
 
-    app.add_middleware(ControlledChatLatency)
+    app.add_middleware(ControlledLatency)
 
     (workspace / "server.json").write_text(json.dumps({"url": url, "fixtures": str(fixture_dir)}), encoding="utf-8")
     try:

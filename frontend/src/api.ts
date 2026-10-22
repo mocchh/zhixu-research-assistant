@@ -28,9 +28,27 @@ export function failedImport(error: unknown): ImportResult | null {
   const value = error.payload as Partial<ImportResult>;
   return Array.isArray(value.papers) && Array.isArray(value.duplicates) && Array.isArray(value.errors) ? value as ImportResult : null;
 }
+
+const activeRequests = new Set<AbortController>();
+let pageLeaving = false;
+if (typeof window !== 'undefined') {
+  // beforeunload can be cancelled by the user. Only stop work once the page
+  // actually leaves, including follow-up fetches queued by a save's catch/finally.
+  window.addEventListener('pagehide', event => {
+    // A cached document pauses and later resumes its existing requests.
+    if (event.persisted) return;
+    pageLeaving = true;
+    for (const controller of activeRequests) controller.abort();
+  });
+  // The same document can resume from the browser's back/forward cache.
+  window.addEventListener('pageshow', () => { pageLeaving = false; });
+}
+
 export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+  if (pageLeaving) throw new DOMException('The page is leaving.', 'AbortError');
   const { timeoutMs = 120_000, ...init } = options;
   const controller = new AbortController();
+  activeRequests.add(controller);
   let timedOut = false;
   const cancel = () => controller.abort();
   if (init.signal?.aborted) controller.abort();
@@ -53,6 +71,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
     if (error instanceof TypeError) throw new Error('无法连接服务。请检查后端是否已启动。');
     throw error;
   } finally {
+    activeRequests.delete(controller);
     clearTimeout(timer);
     init.signal?.removeEventListener('abort', cancel);
   }

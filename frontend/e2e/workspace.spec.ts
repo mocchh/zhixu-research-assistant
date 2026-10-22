@@ -198,6 +198,72 @@ test('stopping a delayed real chat persists the error and retry completes withou
   await expect.poll(async () => (await (await request.get(`/api/sessions/${originalId}`)).json()).messages.at(-1).status).toBe('completed');
 });
 
+test('reload cancels an in-flight session refresh and restores the complete saved answer', async ({ page, request }) => {
+  await readyPaper(request);
+  await page.goto('/');
+  await selectPaper(page);
+  await nav(page, '文献问答');
+  await page.getByRole('textbox', { name: '输入文献问题' }).fill(question);
+  await page.getByRole('button', { name: '发送问题' }).click();
+  await expect(page.locator('.message-assistant .mode-tag')).toContainText('检索摘录');
+  await expect(page.getByRole('button', { name: '停止', exact: true })).toHaveCount(0);
+  await expect(page.getByText(/条回答尚未保存到数据库/)).toHaveCount(0);
+  const { sessions } = await (await request.get('/api/sessions')).json();
+  const saved = await (await request.get(`/api/sessions/${sessions[0].id}`)).json();
+  expect(saved.messages.at(-1).status).toBe('completed');
+  expect(saved.messages.at(-1).content).toContain('8 NVIDIA P100 GPUs');
+
+  const cancellationKey = `session-refresh-cancellation-${saved.id}`;
+  await page.evaluate(key => {
+    const nativeFetch = window.fetch.bind(window);
+    const observed = { started: false, aborted: false, rejected: false, pagehide: false };
+    const record = () => sessionStorage.setItem(key, JSON.stringify(observed));
+    // Observe the application's signal without changing fetch or its response.
+    // Native navigation cancellation alone does not abort this JS-owned signal.
+    window.fetch = (input, init) => {
+      const watch = input === '/api/sessions' && !observed.started;
+      if (watch) {
+        observed.started = true;
+        observed.aborted = Boolean(init?.signal?.aborted);
+        record();
+        init?.signal?.addEventListener('abort', () => { observed.aborted = true; record(); }, { once: true });
+      }
+      const response = nativeFetch(input, init);
+      // Firefox/WebKit may reject the fetch before dispatching pagehide;
+      // api() has already cleaned it up in that case. Keep the native promise.
+      if (watch) void response.catch(() => { observed.rejected = true; record(); });
+      return response;
+    };
+    window.addEventListener('pagehide', () => { observed.pagehide = true; record(); }, { once: true });
+  }, cancellationKey);
+  const gatePath = `/__e2e__/session-refresh-gates/${saved.id}`;
+  expect((await request.post(gatePath)).ok()).toBeTruthy();
+  let gated = false;
+  try {
+    await page.route('**/api/sessions', async route => {
+      if (route.request().method() === 'GET' && !gated) {
+        gated = true;
+        await route.continue({ headers: { ...route.request().headers(), 'x-e2e-session-gate': saved.id } });
+      } else await route.continue();
+    });
+    await page.getByRole('button', { name: '刷新会话', exact: true }).click();
+    await expect.poll(async () => (await (await request.get(gatePath)).json()).entered,
+      { message: 'The session refresh has reached the server and is waiting for release' }).toBe(true);
+    expect(await page.evaluate(key => JSON.parse(sessionStorage.getItem(key) || 'null'), cancellationKey))
+      .toEqual({ started: true, aborted: false, rejected: false, pagehide: false });
+    await page.reload();
+    const cancelled = await page.evaluate(key => JSON.parse(sessionStorage.getItem(key) || 'null'), cancellationKey);
+    expect(cancelled).toMatchObject({ started: true, pagehide: true });
+    expect(cancelled.aborted || cancelled.rejected, 'The gated request was cancelled before leaving the page').toBe(true);
+  } finally {
+    expect((await request.delete(gatePath)).ok()).toBeTruthy();
+  }
+  await nav(page, '文献问答');
+  await expect(page.locator('.message-user')).toContainText(question);
+  await expect(page.locator('.message-assistant')).toContainText('8 NVIDIA P100 GPUs');
+  expect((await (await request.get(`/api/sessions/${saved.id}`)).json()).messages).toEqual(saved.messages);
+});
+
 test.describe('mobile layout', () => {
   // Responsive viewport and touch inputs work in all three engines. Firefox
   // does not implement Playwright's isMobile device emulation.
@@ -219,8 +285,17 @@ test.describe('mobile layout', () => {
     await page.getByRole('button', { name: '发送问题' }).click();
     await expect(page.locator('.message-assistant .mode-tag')).toContainText('检索摘录');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    // The answer renders before its final save and list refresh complete.
+    // A normal saved-chat reload must wait for that whole operation to settle.
+    await expect(page.getByRole('button', { name: '停止', exact: true })).toHaveCount(0);
+    await expect(page.getByText(/条回答尚未保存到数据库/)).toHaveCount(0);
+    const { sessions } = await (await request.get('/api/sessions')).json();
+    const saved = await (await request.get(`/api/sessions/${sessions[0].id}`)).json();
+    expect(saved.messages.at(-1).status).toBe('completed');
+    expect(saved.messages.at(-1).content).toContain('8 NVIDIA P100 GPUs');
     await page.reload();
     await nav(page, '文献问答');
     await expect(page.locator('.message-assistant')).toContainText('8 NVIDIA P100 GPUs');
+    expect((await (await request.get(`/api/sessions/${saved.id}`)).json()).messages).toEqual(saved.messages);
   });
 });
