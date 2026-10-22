@@ -69,39 +69,73 @@ test('incorrect claim falls back to excerpts while its collapsed audit survives 
   await configureLocalModel(page, request, baseURL!, 'e2e-incorrect-answer');
   await page.setViewportSize({ width: 390, height: 844 });
   let chatRequests = 0;
-  page.on('request', value => { if (value.url().endsWith('/api/chat') && value.method() === 'POST') chatRequests += 1; });
-  const result = await ask(page);
-  expect(result.mode).toBe('extractive');
-  expect(result.answer_audit.status).toBe('fallback');
-  expect(result.answer_audit.semantic_entailment_verified).toBe(false);
-  expect(result.answer_audit.raw_response).toContain('999 NVIDIA P100 GPUs');
-  expect(result.answer_audit.draft).toContain('999 NVIDIA P100 GPUs');
-  expect(result.answer_audit.issues.length).toBeGreaterThan(0);
-  const assistant = page.locator('.message-assistant');
-  await expect(assistant.locator('.mode-tag')).toContainText('原文检索摘录');
-  await expect(assistant.locator('.markdown')).toContainText('8 NVIDIA P100 GPUs');
-  await expect(assistant.locator('.markdown')).not.toContainText('999');
-  await expect(assistant.locator('.citation-link')).toHaveCount(0);
-  const audit = assistant.locator('.answer-audit');
-  await expect(audit).toBeVisible();
-  await expect(audit.locator('pre')).toBeHidden();
-  await audit.locator('summary').click();
-  await expect(audit.locator('pre')).toBeVisible();
-  await expect(audit.locator('pre')).toContainText('999 NVIDIA P100 GPUs');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
-  const saved = await savedSession(request);
-  expect(saved.messages.at(-1).answer_audit).toEqual(result.answer_audit);
-  await page.screenshot({ path: screenshotPath('answer-fallback-mobile') });
-  await page.reload();
-  await nav(page, '文献问答');
-  await expect(assistant.locator('.mode-tag')).toContainText('原文检索摘录');
-  await expect(assistant.locator('.markdown')).not.toContainText('999');
-  await expect(audit.locator('pre')).toBeHidden();
-  await audit.locator('summary').click();
-  await expect(audit.locator('pre')).toContainText('999 NVIDIA P100 GPUs');
-  await expect(audit.locator('pre')).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
-  const reloaded = await (await request.get(`/api/sessions/${saved.id}`)).json();
-  expect(reloaded.messages).toEqual(saved.messages);
-  expect(chatRequests).toBe(1);
+  let completedSaveStarted = false;
+  let gated = false;
+  const gateKey = `audit-reading-${test.info().project.name}`;
+  const gatePath = `/__e2e__/session-refresh-gates/${gateKey}`;
+  expect((await request.post(gatePath)).ok()).toBeTruthy();
+  try {
+    page.on('request', value => {
+      if (value.url().endsWith('/api/chat') && value.method() === 'POST') chatRequests += 1;
+      if (value.url().includes('/api/sessions/') && value.method() === 'PUT') {
+        completedSaveStarted ||= value.postDataJSON().messages.some(
+          (message: { role: string; status: string }) => message.role === 'assistant' && message.status === 'completed');
+      }
+    });
+    await page.route('**/api/sessions', async route => {
+      if (route.request().method() === 'GET' && completedSaveStarted && !gated) {
+        gated = true;
+        await route.continue({ headers: { ...route.request().headers(), 'x-e2e-session-gate': gateKey } });
+      } else await route.continue();
+    });
+    const result = await ask(page);
+    expect(result.mode).toBe('extractive');
+    expect(result.answer_audit.status).toBe('fallback');
+    expect(result.answer_audit.semantic_entailment_verified).toBe(false);
+    expect(result.answer_audit.raw_response).toContain('999 NVIDIA P100 GPUs');
+    expect(result.answer_audit.draft).toContain('999 NVIDIA P100 GPUs');
+    expect(result.answer_audit.issues.length).toBeGreaterThan(0);
+    const assistant = page.locator('.message-assistant');
+    await expect(assistant.locator('.mode-tag')).toContainText('原文检索摘录');
+    await expect(assistant.locator('.markdown')).toContainText('8 NVIDIA P100 GPUs');
+    await expect(assistant.locator('.markdown')).not.toContainText('999');
+    await expect(assistant.locator('.citation-link')).toHaveCount(0);
+    // The answer is already durable. Only its background list refresh remains
+    // pending, so releasing it must not move the text the user is inspecting.
+    await expect.poll(async () => (await (await request.get(gatePath)).json()).entered,
+      { message: 'The final session list refresh is waiting after the answer save' }).toBe(true);
+    await expect(page.getByRole('button', { name: '停止', exact: true })).toBeVisible();
+    const saved = await savedSession(request);
+    expect(saved.messages.at(-1).answer_audit).toEqual(result.answer_audit);
+    const audit = assistant.locator('.answer-audit');
+    await expect(audit).toBeVisible();
+    await expect(audit.locator('pre')).toBeHidden();
+    await audit.locator('summary').click();
+    await expect(audit.locator('pre')).toBeVisible();
+    await expect(audit.locator('pre')).toContainText('999 NVIDIA P100 GPUs');
+    const readingPosition = await page.locator('.conversation').evaluate(element => ({ conversation: element.scrollTop, window: window.scrollY }));
+    expect((await request.delete(gatePath)).ok()).toBeTruthy();
+    await expect(page.getByRole('button', { name: '停止', exact: true })).toHaveCount(0);
+    const settledPosition = await page.locator('.conversation').evaluate(element => ({ conversation: element.scrollTop, window: window.scrollY }));
+    expect(Math.abs(settledPosition.conversation - readingPosition.conversation)).toBeLessThanOrEqual(1);
+    expect(Math.abs(settledPosition.window - readingPosition.window)).toBeLessThanOrEqual(1);
+    await expect(audit).toHaveAttribute('open', '');
+    await expect(audit.locator('pre')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    await page.screenshot({ path: screenshotPath('answer-fallback-mobile') });
+    await page.reload();
+    await nav(page, '文献问答');
+    await expect(assistant.locator('.mode-tag')).toContainText('原文检索摘录');
+    await expect(assistant.locator('.markdown')).not.toContainText('999');
+    await expect(audit.locator('pre')).toBeHidden();
+    await audit.locator('summary').click();
+    await expect(audit.locator('pre')).toContainText('999 NVIDIA P100 GPUs');
+    await expect(audit.locator('pre')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    const reloaded = await (await request.get(`/api/sessions/${saved.id}`)).json();
+    expect(reloaded.messages).toEqual(saved.messages);
+    expect(chatRequests).toBe(1);
+  } finally {
+    expect((await request.delete(gatePath)).ok()).toBeTruthy();
+  }
 });

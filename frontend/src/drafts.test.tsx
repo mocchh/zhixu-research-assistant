@@ -141,6 +141,66 @@ describe('note draft protection', () => {
   });
 });
 
+describe('chat scroll position', () => {
+  it('reveals a newly completed answer without scrolling again when its save and refresh finish', async () => {
+    state.view = 'chat';
+    const answerGate = deferred();
+    const saveGate = deferred<Session>();
+    const refreshGate = deferred<{ sessions: Session[] }>();
+    let saved: Session | undefined;
+    let refreshing = false;
+    state.chatHook = () => answerGate.promise;
+    state.apiHook = (path, options) => {
+      if (path === '/sessions/a' && options.method === 'PUT') {
+        const data = JSON.parse(options.body as string);
+        if (data.messages.some((message: { role: string; status: string }) => message.role === 'assistant' && message.status === 'completed')) {
+          saved = { ...state.sessions.a, ...data, revision: data.revision + 1 };
+          state.sessions.a = saved!;
+          return saveGate.promise;
+        }
+      }
+      if (path === '/sessions' && saved) { refreshing = true; return refreshGate.promise; }
+    };
+    render(<Chat/>); await screen.findByText('Session a', { selector: 'strong' });
+    const scrolling = vi.mocked(HTMLElement.prototype.scrollIntoView);
+    scrolling.mockClear();
+    fireEvent.change(screen.getByLabelText('输入文献问题'), { target: { value: 'scroll timing' } });
+    fireEvent.click(screen.getByLabelText('发送问题'));
+    await screen.findByText('正在整理证据…');
+    const pendingScrolls = scrolling.mock.calls.length;
+    expect(pendingScrolls).toBeGreaterThan(0);
+
+    await act(async () => answerGate.resolve({ answer: 'Answer scroll timing', sources: [], mode: 'extractive', warnings: [] }));
+    await screen.findByText('Answer scroll timing');
+    await waitFor(() => expect(saved).toBeDefined());
+    const answerScrolls = scrolling.mock.calls.length;
+    expect.soft(answerScrolls).toBeGreaterThan(pendingScrolls);
+    expect(screen.getByRole('button', { name: '停止' })).toBeTruthy();
+
+    await act(async () => saveGate.resolve(structuredClone(saved!)));
+    await waitFor(() => expect(refreshing).toBe(true));
+    expect(scrolling).toHaveBeenCalledTimes(answerScrolls);
+    expect(screen.getByRole('button', { name: '停止' })).toBeTruthy();
+    await act(async () => refreshGate.resolve({ sessions: structuredClone(Object.values(state.sessions)) }));
+    await waitFor(() => expect(screen.queryByRole('button', { name: '停止' })).toBeNull());
+    expect(scrolling).toHaveBeenCalledTimes(answerScrolls);
+  });
+  it('reveals the latest answer when switching between saved sessions of the same length', async () => {
+    state.view = 'chat';
+    for (const id of ['a', 'b']) state.sessions[id].messages = [{
+      id: `answer-${id}`, role: 'assistant', content: `Saved answer ${id}`, paper_ids: ['p'],
+      sources: [], warnings: [], status: 'completed',
+    }];
+    render(<Chat/>); await screen.findByText('Saved answer a');
+    const scrolling = vi.mocked(HTMLElement.prototype.scrollIntoView);
+    const initialScrolls = scrolling.mock.calls.length;
+    expect(initialScrolls).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Session b' }));
+    await screen.findByText('Saved answer b');
+    expect(scrolling.mock.calls.length).toBeGreaterThan(initialScrolls);
+  });
+});
+
 describe('unsaved chat answers', () => {
   it('ignores an older save response after a newer question is already pending', async () => {
     state.view = 'chat'; const saveGate = deferred<Session>(); const answerGate = deferred(); let saved: Session | undefined;

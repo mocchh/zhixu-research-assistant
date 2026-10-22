@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowUp, BookOpen, CornerDownLeft, MessageSquare, Plus, RefreshCw, Sparkles, Square, Trash2, User } from 'lucide-react';
 import { api, errorText, isAbort, post, type Answer } from './api';
 import { useWorkspace } from './store';
@@ -72,7 +72,10 @@ export default function Chat() {
     api<{ sessions: Session[] }>('/sessions').then(result => { setSessions(result.sessions); if (result.sessions[0] && !activeId.current) void openSession(result.sessions[0].id); }).catch(error => { sessionsLoaded.current = false; setError(errorText(error)); });
   }, [view]);
   useEffect(() => () => { generation.current.cancel(); loadingRequest.current.cancel(); }, []);
-  useEffect(() => { if (view === 'chat' && session?.messages.length) end.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' }); }, [session?.messages.length, busy, view]);
+  const lastMessage = session?.messages.at(-1);
+  // Position new content before paint. Finishing a background save must not
+  // move the answer while the user is reading or clicking its audit details.
+  useLayoutEffect(() => { if (view === 'chat' && lastMessage) end.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' }); }, [session?.id, lastMessage?.id, lastMessage?.status, view]);
   const newSession = async () => {
     const operation = loadingRequest.current.begin('new'); setLoading(true); setError('');
     await stop(); if (!operation.isCurrent()) return;
