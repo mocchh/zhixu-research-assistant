@@ -1,0 +1,437 @@
+{
+  "schema_version": 1,
+  "fixture_kind": "independent_ai_source_checked_unseen_v2",
+  "methodology": "Independent AI-assisted source verification, not a human blind test. All four PDF files are absent from both prior 31-case and 22-case fixtures. Cases were written from original PDF text; table/figure/code pages were also visually checked. One-based physical PDF pages and exact normalized snippets are frozen before any retrieval scores. Parsed block availability is checked before freezing, without running retrieval. Baseline uses an isolated pre-change retriever snapshot. The algorithm agent is not given these questions or results before its implementation freeze. These tests measure source retrieval and missing-source behavior, not generated-answer correctness, formula semantics, or table reasoning.",
+  "k": 8,
+  "documents": [
+    {
+      "filename": "1910.02054v3.pdf",
+      "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e"
+    },
+    {
+      "filename": "1910.10683v4.pdf",
+      "sha256": "ad07e47cedf437a4156419ce5d3076e08a3e59bbfd6dac7cc53df1009cdcbe7f"
+    },
+    {
+      "filename": "2101.03961v3.pdf",
+      "sha256": "f340f6ace31abf7d0730ef461404279f40d3c890e9cc2daeb7068b3304afdbd6"
+    },
+    {
+      "filename": "2305.18290v3.pdf",
+      "sha256": "92cb3a2b71362acda98a789b03d88688fd33cf5fcf13f81d2b1de30ee7d3b67a"
+    }
+  ],
+  "cases": [
+    {
+      "id": "unseen_zero_mixed_precision_bytes",
+      "category": "formula",
+      "question": "ZeRO 的混合精度 Adam 状态内存如何由参数、梯度和优化器状态相加？K 是多少，1.5B 参数例子至少占多少 GB？",
+      "filenames": [
+        "1910.02054v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1910.02054v3.pdf",
+          "page": 8,
+          "terms": [
+            "Mixed-precision Adam has K = 12",
+            "2Ψ + 2Ψ + KΨ = 16Ψ",
+            "at least 24 GB"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "K=12；2Ψ+2Ψ+KΨ=16Ψ 字节；1.5B 模型至少24GB，仅指模型状态，不含激活。"
+    },
+    {
+      "id": "unseen_zero_partition_stages",
+      "category": "numeric",
+      "question": "ZeRO-DP 逐步启用 optimizer、gradient 和 parameter partitioning 时，三阶段分别节省多少内存，通信量有什么代价？",
+      "filenames": [
+        "1910.02054v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1910.02054v3.pdf",
+          "page": 2,
+          "terms": [
+            "Optimizer State Partitioning",
+            "4x memory reduction",
+            "same communication volume"
+          ]
+        },
+        {
+          "filename": "1910.02054v3.pdf",
+          "page": 2,
+          "terms": [
+            "Add Gradient Partitioning",
+            "8x memory reduction",
+            "same communication volume"
+          ]
+        },
+        {
+          "filename": "1910.02054v3.pdf",
+          "page": 2,
+          "terms": [
+            "Add Parameter Partitioning",
+            "linear with DP degree",
+            "50% increase in communication volume"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "阶段1节省4倍、阶段2节省8倍且通信量不变；阶段3按DP度数线性节省，通信量增加50%。"
+    },
+    {
+      "id": "unseen_zero_memory_table",
+      "category": "table",
+      "question": "ZeRO 表1中，7.5B 模型在 DP=64 时，Pos、Pos+g、Pos+g+p 的单设备模型状态内存各是多少 GB？",
+      "filenames": [
+        "1910.02054v3.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "1910.02054v3.pdf",
+              "page": 11,
+              "terms": [
+                "7.5B Model (GB)"
+              ]
+            },
+            {
+              "filename": "1910.02054v3.pdf",
+              "page": 11,
+              "terms": [
+                "64 31.4",
+                "16.6 1.88",
+                "Pos+g+p"
+              ]
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_table",
+      "answer_outline": "31.4、16.6、1.88 GB；不能把128B或1T模型列当作7.5B列。"
+    },
+    {
+      "id": "unseen_t5_c4_origin_size",
+      "category": "numeric",
+      "question": "T5 的基础 C4 数据集取自哪个月份的网页抽取文本，过滤后大约多少 GB？",
+      "filenames": [
+        "1910.10683v4.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1910.10683v4.pdf",
+          "page": 7,
+          "terms": [
+            "April 2019",
+            "about 750 GB",
+            "Colossal"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "2019年4月；过滤后约750GB。"
+    },
+    {
+      "id": "unseen_t5_span_sentinel",
+      "category": "mechanism",
+      "question": "T5 基线去噪任务随机删除多少比例的 token，连续缺失片段怎样用 sentinel 标记，输出序列要预测什么？",
+      "filenames": [
+        "1910.10683v4.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1910.10683v4.pdf",
+          "page": 13,
+          "terms": [
+            "drops out 15% of tokens",
+            "single sentinel token",
+            "unique to the sequence",
+            "target then corresponds to all of the dropped-out spans"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "15%；每个连续片段以本序列唯一sentinel替代；目标是被删除的片段，以对应sentinel分隔并加终止sentinel。"
+    },
+    {
+      "id": "unseen_t5_span_table",
+      "category": "table",
+      "question": "T5 表7中，平均 span length 为3时 GLUE 和 SGLUE 两列分数各是多少？",
+      "filenames": [
+        "1910.10683v4.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "1910.10683v4.pdf",
+              "page": 24,
+              "terms": [
+                "Span length",
+                "GLUE",
+                "SGLUE"
+              ]
+            },
+            {
+              "filename": "1910.10683v4.pdf",
+              "page": 24,
+              "terms": [
+                "3 83.49",
+                "19.62 81.84",
+                "72.53 26.86"
+              ]
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_table",
+      "answer_outline": "GLUE 83.49；SGLUE 72.53；列对齐已看原表核对。"
+    },
+    {
+      "id": "unseen_switch_capacity_formula",
+      "category": "formula",
+      "question": "Switch 图3的 expert capacity 怎样按 token 数、专家数和 capacity factor 计算？增大 capacity factor 对溢出、计算和通信有什么影响？",
+      "filenames": [
+        "2101.03961v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2101.03961v3.pdf",
+          "page": 6,
+          "terms": [
+            "(total tokens / num experts) × capacity factor",
+            "overflow",
+            "increases computation and communication costs"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_figure_caption",
+      "answer_outline": "expert capacity=(总token数/专家数)×capacity factor；增大factor缓解溢出但增加计算和通信。"
+    },
+    {
+      "id": "unseen_switch_balancing_coefficient",
+      "category": "numeric",
+      "question": "Switch 的辅助负载均衡损失使用多大的 α？作者扫描了从多少到多少的超参数范围？",
+      "filenames": [
+        "2101.03961v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2101.03961v3.pdf",
+          "page": 8,
+          "terms": [
+            "α = 10−2",
+            "α from 10−1 to 10−5"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "采用10^-2；以10的幂从10^-1扫描到10^-5。"
+    },
+    {
+      "id": "unseen_switch_capacity_speed_table",
+      "category": "table",
+      "question": "Switch 表1中 capacity factor 同为1.0时，MoE-Base 与 Switch-Base 的速度（examples/sec）和达到质量阈值所需小时数各是多少？",
+      "filenames": [
+        "2101.03961v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2101.03961v3.pdf",
+          "page": 9,
+          "terms": [
+            "MoE-Base 1.0 -1.572 80.1 860",
+            "Switch-Base 1.0 -1.561 62.8 1000"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_table",
+      "answer_outline": "MoE-Base：860 examples/sec、80.1小时；Switch-Base：1000 examples/sec、62.8小时。"
+    },
+    {
+      "id": "unseen_switch_selective_precision_table",
+      "category": "table",
+      "question": "Switch 表2中 selective precision 的负 log perplexity 和速度各是多少？全 bfloat16 的对应质量是否出现发散？",
+      "filenames": [
+        "2101.03961v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2101.03961v3.pdf",
+          "page": 10,
+          "terms": [
+            "Switch-Base (Selective precision) -1.716 1390",
+            "Switch-Base (bfloat16) -3.780 [diverged] 1390",
+            "Examples/sec"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_table",
+      "answer_outline": "选择性精度：-1.716、1390 examples/sec；全bfloat16为-3.780并标注diverged。"
+    },
+    {
+      "id": "unseen_dpo_loss_code",
+      "category": "formula",
+      "question": "DPO 附录 B 的代码中，losses 如何把 beta、policy log-ratio 和 reference log-ratio 代入 logsigmoid？",
+      "filenames": [
+        "2305.18290v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2305.18290v3.pdf",
+          "page": 20,
+          "terms": [
+            "losses = -F.logsigmoid(beta * (pi_logratios - ref_logratios))"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_code",
+      "answer_outline": "losses = -F.logsigmoid(beta * (pi_logratios - ref_logratios))；这是逐偏好对损失表达式。"
+    },
+    {
+      "id": "unseen_dpo_default_hyperparameters",
+      "category": "numeric",
+      "question": "DPO 默认使用哪种优化器、batch size、学习率、warmup 步数和 β？TL;DR summarization 的 β 是否不同？",
+      "filenames": [
+        "2305.18290v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2305.18290v3.pdf",
+          "page": 20,
+          "terms": [
+            "β = 0.1",
+            "batch size of 64",
+            "RMSprop",
+            "learning rate of 1e-6",
+            "150 steps",
+            "TL;DR summarization, we use β = 0.5"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_code_page",
+      "answer_outline": "默认RMSprop、batch64、学习率1e-6、线性预热150步、β=0.1；TL;DR改为β=0.5。"
+    },
+    {
+      "id": "unseen_dpo_ood_table",
+      "category": "table",
+      "question": "DPO 表1在 CNN/DailyMail 分布外新闻摘要评估中，采样 temperature=0.25 时 DPO 与 PPO 对 ground-truth 摘要的 GPT-4 win rate 各是多少？",
+      "filenames": [
+        "2305.18290v3.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2305.18290v3.pdf",
+              "page": 9,
+              "terms": [
+                "Alg.",
+                "Temp 0.25"
+              ]
+            },
+            {
+              "filename": "2305.18290v3.pdf",
+              "page": 9,
+              "terms": [
+                "DPO 0.36 0.31",
+                "PPO 0.26 0.23"
+              ]
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_rendered_table",
+      "answer_outline": "DPO 0.31；PPO 0.23。这里是GPT-4判别的对真实摘要胜率，不是人工胜率。"
+    },
+    {
+      "id": "unseen_cross_corruption_rate",
+      "category": "multi_paper",
+      "question": "比较 T5 与 Switch 论文的预训练设置：各自删除多少比例的 token，又用什么标记替换被遮住的片段？",
+      "filenames": [
+        "1910.10683v4.pdf",
+        "2101.03961v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1910.10683v4.pdf",
+          "page": 13,
+          "terms": [
+            "drops out 15% of tokens",
+            "single sentinel token"
+          ]
+        },
+        {
+          "filename": "2101.03961v3.pdf",
+          "page": 8,
+          "terms": [
+            "drop out 15% of tokens",
+            "single sentinel token"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "两篇均使用15%删除比例，连续缺失片段用单个sentinel替代。"
+    },
+    {
+      "id": "unseen_cross_optimizer_identity",
+      "category": "multi_paper",
+      "question": "分别根据 ZeRO 的混合精度状态内存分析和 DPO 的默认训练设置，它们讨论或采用的是哪种优化器？请区分内存分析和训练配置。",
+      "filenames": [
+        "1910.02054v3.pdf",
+        "2305.18290v3.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1910.02054v3.pdf",
+          "page": 8,
+          "terms": [
+            "Mixed-precision Adam has K = 12"
+          ]
+        },
+        {
+          "filename": "2305.18290v3.pdf",
+          "page": 20,
+          "terms": [
+            "RMSprop optimizer",
+            "learning rate of 1e-6"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "ZeRO此处分析混合精度Adam；DPO默认训练配置为RMSprop，不能把二者混作统一实验。"
+    },
+    {
+      "id": "unseen_absent_t5_revision",
+      "category": "missing_version",
+      "question": "1910.10683v9 的 C4 过滤后数据规模是多少？只引用这个版本。",
+      "filenames": [
+        "1910.10683v4.pdf",
+        "2101.03961v3.pdf"
+      ],
+      "expected": [],
+      "source_review": "native_pdf_text",
+      "answer_outline": "所选范围只有1910.10683v4，无v9；应无来源并给出缺失提示。",
+      "expect_no_sources": true
+    },
+    {
+      "id": "unseen_absent_mamba_original",
+      "category": "missing_paper",
+      "question": "Mamba 原论文的选择性状态空间离散化公式是什么？请引用 Mamba 原文。",
+      "filenames": [
+        "1910.02054v3.pdf",
+        "1910.10683v4.pdf",
+        "2101.03961v3.pdf",
+        "2305.18290v3.pdf"
+      ],
+      "expected": [],
+      "source_review": "native_pdf_text",
+      "answer_outline": "所选四篇不包含Mamba原论文；应无来源并给出缺失提示。",
+      "expect_no_sources": true
+    }
+  ]
+}

@@ -1,0 +1,483 @@
+{
+  "schema_version": 2,
+  "fixture_kind": "independent_ai_source_checked_unseen_v3",
+  "match_protocol": "table_cells_v2",
+  "methodology": "Independent AI-assisted source construction, not human blind testing. Four PDFs are absent from the previous 31/22/17-case fixtures. Questions were written from original PDFs, six formula/table pages visually inspected, and source availability checked without retrieval before freezing. No questions, PDF scope, gold targets or baseline scores were shared with the retrieval implementer before its final implementation freeze. An isolated pre-change snapshot is used for baseline. Both baseline and after must retain the same parser/evaluator hashes, k=8 and table_cells_v2 protocol. Tests measure evidence retrieval and missing-source behavior, not generated-answer semantics. Subsequent use after disclosure is regression testing, not a new unseen evaluation.",
+  "k": 8,
+  "documents": [
+    {
+      "filename": "2010.11929v2.pdf",
+      "sha256": "8ce7b83971a14508ca711a27c875c9b6914c4f6767cf3150fb1ca6c07aa056d6"
+    },
+    {
+      "filename": "2103.00020v1.pdf",
+      "sha256": "6478b6e571a7d6fcd846d8ef77bfd60c285f1986abb8f475eedc43de403074f5"
+    },
+    {
+      "filename": "2304.08485v2.pdf",
+      "sha256": "dc8bace378a282ea78caa9b5959306202fbfa3b8cedaf8a66541a9af18f4d3bf"
+    },
+    {
+      "filename": "2305.14314v1.pdf",
+      "sha256": "33a4e757c19d6ea8d3cca8958fce8fe405e290272e135c99ee66065c775d5bd1"
+    }
+  ],
+  "cases": [
+    {
+      "id": "unseen_v3_vit_image_patch_and_head",
+      "category": "formula",
+      "question": "ViT 如何把 H×W 图像转换为 P×P patches，patch 数 N 与 H、W、P 的关系是什么？分类头在预训练与微调时分别采用什么结构？",
+      "filenames": [
+        "2010.11929v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 3,
+          "terms": [
+            "N = HW/P 2",
+            "trainable linear projection"
+          ]
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 3,
+          "terms": [
+            "MLP with one hidden layer at pre-training",
+            "single linear layer at fine-tuning time"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_visual_page",
+      "answer_outline": "patch展平后线性投影至D维；N=HW/P²。预训练分类头为单隐藏层MLP，微调为单线性层；N指图像patch数，不含额外class token。"
+    },
+    {
+      "id": "unseen_v3_clip_contrastive_pairs",
+      "category": "mechanism",
+      "question": "CLIP 对一个含 N 对图文的 batch 构造哪些正负配对，最大化/最小化什么相似度，并使用什么损失？",
+      "filenames": [
+        "2103.00020v1.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2103.00020v1.pdf",
+              "page": 4,
+              "terms": [
+                "Given a batch of N (image, text) pairs",
+                "N × N possible"
+              ]
+            },
+            {
+              "filename": "2103.00020v1.pdf",
+              "page": 4,
+              "terms": [
+                "N real pairs",
+                "N 2 −N incorrect pairings",
+                "symmetric cross entropy loss"
+              ]
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "N个真实配对，N²−N个错误配对；最大化前者、最小化后者的图文embedding余弦相似度；对称交叉熵；图像和文本编码器联合训练。"
+    },
+    {
+      "id": "unseen_v3_llava_two_training_stages",
+      "category": "multi_stage",
+      "question": "LLaVA 两阶段训练中，视觉编码器、投影层和语言模型分别冻结还是更新？第一阶段的监督答案来自哪里？",
+      "filenames": [
+        "2304.08485v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "terms": [
+            "Stage 1: Pre-training for Feature Alignment",
+            "answer Xa is the original caption",
+            "visual encoder and LLM weights frozen",
+            "the projection matrix"
+          ]
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "terms": [
+            "Stage 2: Fine-tuning End-to-End",
+            "visual encoder weights frozen",
+            "projection layer and LLM"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "阶段1：视觉编码器与LLM冻结，仅训练投影矩阵W，原始caption为答案；阶段2：视觉编码器仍冻结，更新投影层及LLM。"
+    },
+    {
+      "id": "unseen_v3_qlora_double_quantization_stages",
+      "category": "mechanism",
+      "question": "QLoRA 的 Double Quantization 对什么再次量化？第二次量化用几位浮点数与多大blocksize，为什么先减均值，blocksize=64时每参数额外位数如何变化？",
+      "filenames": [
+        "2305.14314v1.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2305.14314v1.pdf",
+              "page": 5,
+              "terms": [
+                "Double Quantization (DQ)",
+                "quantization constants for additional memory savings"
+              ]
+            },
+            {
+              "filename": "2305.14314v1.pdf",
+              "page": 5,
+              "terms": [
+                "8-bit Floats with a blocksize of 256",
+                "second quantization"
+              ]
+            },
+            {
+              "filename": "2305.14314v1.pdf",
+              "page": 5,
+              "terms": [
+                "we subtract the mean",
+                "center the values around zero",
+                "0.127 bits",
+                "0.373 bits"
+              ]
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_visual_page",
+      "answer_outline": "量化第一次的量化常数；二次使用8-bit Float、blocksize256；正值常数减均值居中以用对称量化；开销0.5→0.127 bits/parameter，减少0.373。"
+    },
+    {
+      "id": "unseen_v3_vit_model_variant_table",
+      "category": "table",
+      "question": "ViT 表1的 ViT-Base 与 ViT-Large 各有多少层、hidden size、attention heads和参数量？请区分MLP size这一列。",
+      "filenames": [
+        "2010.11929v2.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2010.11929v2.pdf",
+              "page": 5,
+              "terms": [
+                "Hidden size D",
+                "Heads",
+                "Params"
+              ],
+              "table_row": {
+                "cells": [
+                  "ViT-Base",
+                  "12",
+                  "768",
+                  "3072",
+                  "12",
+                  "86M"
+                ],
+                "start_column": 0
+              }
+            },
+            {
+              "filename": "2010.11929v2.pdf",
+              "page": 5,
+              "terms": [
+                "Hidden size D",
+                "Heads",
+                "Params"
+              ],
+              "table_row": {
+                "cells": [
+                  "ViT-Large",
+                  "24",
+                  "1024",
+                  "4096",
+                  "16",
+                  "307M"
+                ],
+                "start_column": 0
+              }
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_visual_page",
+      "answer_outline": "Base：12层、D768、12头、86M；Large：24层、D1024、16头、307M。MLP size分别3072/4096，不能误当hidden size。"
+    },
+    {
+      "id": "unseen_v3_clip_vit_resolution_table",
+      "category": "table",
+      "question": "CLIP 附录表20里，ViT-L/14 与 ViT-L/14-336px 的输入分辨率各是多少？二者视觉Transformer层数、视觉注意力头数和文本注意力头数是否变化？",
+      "filenames": [
+        "2103.00020v1.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2103.00020v1.pdf",
+              "page": 48,
+              "terms": [
+                "Vision Transformer",
+                "Text Transformer"
+              ],
+              "table_row": {
+                "cells": [
+                  "ViT-L/14",
+                  "4 × 10−4",
+                  "768",
+                  "224",
+                  "24",
+                  "1024",
+                  "16",
+                  "12",
+                  "768",
+                  "12"
+                ],
+                "start_column": 0
+              }
+            },
+            {
+              "filename": "2103.00020v1.pdf",
+              "page": 48,
+              "terms": [
+                "Vision Transformer",
+                "Text Transformer"
+              ],
+              "table_row": {
+                "cells": [
+                  "ViT-L/14-336px",
+                  "2 × 10−5",
+                  "768",
+                  "336",
+                  "24",
+                  "1024",
+                  "16",
+                  "12",
+                  "768",
+                  "12"
+                ],
+                "start_column": 0
+              }
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_visual_page",
+      "answer_outline": "224与336；视觉均24层、16头，文本均12头，没有变化。这里表20的视觉/文本头数列必须区分。"
+    },
+    {
+      "id": "unseen_v3_llava_coco_ablation_table",
+      "category": "table",
+      "question": "LLaVA 表4的COCO消融中，Full data与只用Conversation数据时，Complex reasoning和All两列相对分数分别是多少？不要使用In-the-Wild表5。",
+      "filenames": [
+        "2304.08485v2.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2304.08485v2.pdf",
+              "page": 7,
+              "terms": [
+                "LLaVA-Bench (COCO)",
+                "Complex reasoning"
+              ],
+              "table_row": {
+                "cells": [
+                  "Full data",
+                  "83.1",
+                  "75.3",
+                  "96.5",
+                  "85.1"
+                ],
+                "start_column": 0
+              }
+            },
+            {
+              "filename": "2304.08485v2.pdf",
+              "page": 7,
+              "terms": [
+                "LLaVA-Bench (COCO)",
+                "Complex reasoning"
+              ],
+              "table_row": {
+                "cells": [
+                  "Conversation",
+                  "76.5 (-6.6)",
+                  "59.8 (-16.2)",
+                  "84.9 (-12.4)",
+                  "73.8 (-11.3)"
+                ],
+                "start_column": 0
+              }
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_visual_page",
+      "answer_outline": "Full data为96.5/85.1；Conversation为84.9/73.8。它们是相对文本GPT-4参考的分数，不是人工准确率。"
+    },
+    {
+      "id": "unseen_v3_qlora_mmlu_conditioned_table",
+      "category": "table",
+      "question": "QLoRA 表4在LLaMA 65B、FLAN v2条件下，BFloat16与NFloat4 + DQ的mean 5-shot MMLU分数各是多少？不要取Alpaca列或跨模型Mean列。",
+      "filenames": [
+        "2305.14314v1.pdf"
+      ],
+      "expected": [
+        {
+          "all_of": [
+            {
+              "filename": "2305.14314v1.pdf",
+              "page": 8,
+              "terms": [
+                "Mean 5-shot MMLU Accuracy",
+                "65B",
+                "FLAN v2"
+              ],
+              "table_row": {
+                "cells": [
+                  "BFloat16",
+                  "38.4",
+                  "45.6",
+                  "47.2",
+                  "50.6",
+                  "57.7",
+                  "60.5",
+                  "61.8",
+                  "62.5",
+                  "53.0"
+                ],
+                "start_column": 0
+              }
+            },
+            {
+              "filename": "2305.14314v1.pdf",
+              "page": 8,
+              "terms": [
+                "Mean 5-shot MMLU Accuracy",
+                "65B",
+                "FLAN v2"
+              ],
+              "table_row": {
+                "cells": [
+                  "NFloat4 + DQ",
+                  "39.0",
+                  "44.5",
+                  "47.5",
+                  "50.7",
+                  "57.3",
+                  "59.2",
+                  "61.8",
+                  "63.9",
+                  "53.1"
+                ],
+                "start_column": 0
+              }
+            }
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text_and_visual_page",
+      "answer_outline": "BFloat16为62.5，NFloat4+DQ为63.9。65B Alpaca列两者均61.8；最右Mean分别53.0/53.1，不能混淆。"
+    },
+    {
+      "id": "unseen_v3_cross_vit_clip_pretraining",
+      "category": "multi_paper",
+      "question": "比较原始ViT与CLIP论文的预训练：各自batch size和学习率衰减方式是什么？请分别引用两篇原文，并区分ViT微调的batch。",
+      "filenames": [
+        "2010.11929v2.pdf",
+        "2103.00020v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 5,
+          "terms": [
+            "a batch size of 4096",
+            "linear learning rate warmup and decay",
+            "batch size 512"
+          ]
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 5,
+          "terms": [
+            "cosine schedule",
+            "minibatch size of 32,768"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "ViT预训练batch4096，linear warmup/decay；512是微调batch。CLIP预训练batch32768，cosine learning-rate decay。"
+    },
+    {
+      "id": "unseen_v3_cross_llava_qlora_updated_weights",
+      "category": "multi_paper",
+      "question": "比较LLaVA第二阶段与QLoRA：它们是否更新预训练语言模型的基座权重，各自真正求梯度/更新的参数是什么？QLoRA的存储与计算数据类型又有什么区别？",
+      "filenames": [
+        "2304.08485v2.pdf",
+        "2305.14314v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "terms": [
+            "Stage 2: Fine-tuning End-to-End",
+            "projection layer and LLM"
+          ]
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 5,
+          "terms": [
+            "one storage data type",
+            "4-bit NormalFloat",
+            "16-bit BrainFloat",
+            "only compute weight gradients for the LoRA parameters"
+          ]
+        }
+      ],
+      "source_review": "native_pdf_text",
+      "answer_outline": "LLaVA第二阶段更新投影层和LLM基座，视觉encoder冻结；QLoRA不更新4-bit基座，仅LoRA参数求权重梯度。QLoRA通常NF4存储、BF16计算，前后向先反量化。"
+    },
+    {
+      "id": "unseen_v3_absent_vit_version",
+      "category": "missing_version",
+      "question": "请仅根据ViT原论文 arXiv:2010.11929v3 的表1回答 ViT-Huge 的参数量；若没有这个指定版本，明确说明，不要借用v2。",
+      "filenames": [
+        "2010.11929v2.pdf"
+      ],
+      "expected": [],
+      "source_review": "native_pdf_text",
+      "answer_outline": "本组只有2010.11929v2，缺v3；应明确资料不足且不返回v2来源。",
+      "expect_no_sources": true
+    },
+    {
+      "id": "unseen_v3_absent_rag_original",
+      "category": "missing_paper",
+      "question": "请从RAG原始论文《Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks》的原文说明它的Wikipedia检索索引包含多少个文本段；若该原论文不在本组文献里，请明确说明，不能把别的论文里的二手介绍当作原文。",
+      "filenames": [
+        "2010.11929v2.pdf",
+        "2103.00020v1.pdf",
+        "2304.08485v2.pdf",
+        "2305.14314v1.pdf"
+      ],
+      "expected": [],
+      "source_review": "native_pdf_text",
+      "answer_outline": "本组四篇均非RAG原论文，应明确原文缺失，不以其他论文来源代答。",
+      "expect_no_sources": true
+    }
+  ]
+}

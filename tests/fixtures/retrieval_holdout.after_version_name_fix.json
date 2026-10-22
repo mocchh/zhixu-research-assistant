@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_label": "after_version_name_fix",
+  "evaluation_note": "修复前已查看首轮失败。此报告是固定扩展集上的语法修复回归，不是新的盲测；没有据结果修改 gold、术语扩展或排序。",
+  "fix": "独立文献版本 vN 的词边界排除连接到 Latin 名称的连字符（含 Unicode 连字符）、下划线、句点与斜杠。DeepSeek-V3 等模型名不再约束文献修订号；显式 arXiv ID 与 v3版本/第3版保持原限制。",
+  "first_report": "tests/fixtures/retrieval_holdout.baseline.json",
+  "first_run": {
+    "passed_cases": 12,
+    "case_count": 22,
+    "gold_hits": 11,
+    "gold_targets": 22,
+    "recall_at_k": 0.5,
+    "retriever_sha256": "8920abee34bc3419a1a2ef44850424e0976e3daff6a0338e39b3d340058b1e03"
+  },
+  "after_report": "test-results/retrieval-holdout.after_version_name_fix.json",
+  "after_run": {
+    "passed_cases": 14,
+    "case_count": 22,
+    "gold_hits": 13,
+    "gold_targets": 22,
+    "recall_at_k": 0.5909090909090909,
+    "locator_integrity": 1.0,
+    "version_or_scope_leaks": 0,
+    "missing_source_passes": 2,
+    "missing_source_cases": 2,
+    "retriever_sha256": "ff65131c1acf06b194d9565e15a1e5fa213028038555a8b7cd62f6843a85f80f",
+    "regression_check": "passed",
+    "known_failed_cases": 8
+  },
+  "resolved_cases": [
+    "deepseek_parameters",
+    "deepseek_cost_scope"
+  ],
+  "old_development_fixture": "31/31 cases, 33/33 gold targets, 227/227 locator integrity, zero leaks, 2/2 missing refusals.",
+  "tests": "82 related tests passed.",
+  "original_retriever_snapshot": "test-results/retriever-before-version-fix.py",
+  "remaining_failures": "See retrieval_holdout.analysis.json; its first-run findings remain, except the two DeepSeek version-name failures are resolved here.",
+  "freeze_note": "Original fixture, initial retriever freeze manifest and first-run baseline are preserved. --freeze-file intentionally rejects the modified retriever; use --baseline for subsequent regression checks."
+}

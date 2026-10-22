@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "frozen_at_utc": "2026-10-02T19:08:26.951766+00:00",
+  "fixture_sha256": "c111cc2f7e1275a6ed3fb238ec89e4c2e921aa184eab5fd7a5fdb42bcc79619c",
+  "retriever_sha256": "8ed5d973c41dc364de2cd993380598e57e0e25a6a840fccbfce12271b8eab401",
+  "retriever_snapshot": "test-results/unseen-v3-baseline/intelligence.py",
+  "parser_sha256": "1fb306e4f12c1b50eef0b9ec60201940f4c7e774b02283f8211fd408272ce465",
+  "parser_snapshot": "test-results/unseen-v3-baseline/documents.py",
+  "evaluator_sha256": "bae9bf0c3c894a8f6a43774a307c6bc7fcce6b539dc16a2ada4bcda2a7e56931",
+  "evaluator_snapshot": "test-results/unseen-v3-baseline/evaluate_retrieval.py",
+  "match_protocol": "table_cells_v2",
+  "k": 8,
+  "documents": 4,
+  "physical_pages": 121,
+  "cases": 12,
+  "gold_targets": 14,
+  "source_leaves_verified": 21,
+  "table_rows_visually_verified": 8,
+  "parsed_targets_available_before_retrieval": 14,
+  "review_kind": "independent AI-assisted original-PDF verification; not human blind testing",
+  "information_boundary": "No questions, document scope, gold targets or baseline scores shared with algorithm agent before final implementation freeze. No new v3 retrieval query run before this manifest. Root receives only progress and fixture/hash metadata until review is authorized.",
+  "timing_note": "Candidate implementation snapshots were frozen while independent source construction was in progress; the baseline still loads the explicitly isolated pre-change snapshot. No candidate implementation was read or used to construct this fixture.",
+  "visual_checks": [
+    {
+      "filename": "2010.11929v2.pdf",
+      "pages": [
+        3,
+        5
+      ]
+    },
+    {
+      "filename": "2103.00020v1.pdf",
+      "pages": [
+        48
+      ]
+    },
+    {
+      "filename": "2304.08485v2.pdf",
+      "pages": [
+        7
+      ]
+    },
+    {
+      "filename": "2305.14314v1.pdf",
+      "pages": [
+        5,
+        8
+      ]
+    }
+  ]
+}

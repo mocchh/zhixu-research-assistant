@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "phase": "frozen_before_first_retrieval_run",
+  "frozen_at_utc": "2026-10-02T17:22:55.880214+00:00",
+  "fixture_path": "tests/fixtures/retrieval_holdout.json",
+  "fixture_sha256": "a96568ac31893d86f6991f24d06b34b5719c46a7cdfe2afb24030eb00181192b",
+  "retriever_path": "backend/intelligence.py",
+  "retriever_sha256": "8920abee34bc3419a1a2ef44850424e0976e3daff6a0338e39b3d340058b1e03",
+  "original_fixture_sha256": "e3061e5c5c1591b8aff69216d5d8dc80ceb26f99829c642d46ddb727387a9151",
+  "document_count": 8,
+  "case_count": 22,
+  "gold_native_pdf_text_check": "all targets and terms found on their stated physical PDF pages"
+}

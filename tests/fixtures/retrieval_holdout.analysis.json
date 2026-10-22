@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "fixture_sha256": "a96568ac31893d86f6991f24d06b34b5719c46a7cdfe2afb24030eb00181192b",
+  "baseline_report_sha256": "a28ada1a39d75d6cf183c3da9dc79a41b05f7cd2ca193e25a03d04cdf548bd63",
+  "label": "扩展留出集；本轮未调参",
+  "methodology": "8 篇未进入旧 31 题开发验收集的项目 PDF；先直接核对原文页与片段，再冻结 22 题及检索器 SHA，随后首次运行。由 AI 辅助核对来源，不是双盲或独立人工标注。未调用模型 API，未改动检索算法、旧 fixture、应用 data。",
+  "first_run": {
+    "passed_cases": 12,
+    "case_count": 22,
+    "gold_hits": 11,
+    "gold_targets": 22,
+    "recall_at_8": 0.5,
+    "gold_available": 22,
+    "locator_integrity": "144/144",
+    "version_or_scope_leaks": 0,
+    "missing_refusal": "2/2"
+  },
+  "metric_limits": [
+    "分数衡量固定原文页与片段目标命中，不是模型回答准确率或语义正确率。",
+    "返回其他同样支持问题的未列举段落仍会记为未命中；本轮没有根据结果增补 gold。",
+    "所有 22 个目标在真实解析块中存在，未命中不归因为语料或 gold 缺失。",
+    "两个跨论文题包含各两个目标；两个缺资料题不计正向 gold，因此 22 题对应 22 个正向目标。"
+  ],
+  "failures": [
+    {
+      "id": "lora_forward",
+      "gold": "2106.09685v2.pdf p4 公式(3)",
+      "observed": "同页矩阵更新与部署文字排在前面，独立短公式 h = W0x + ∆Wx = W0x + BAx 未进入前 8。",
+      "cause": "短公式与解释文字的排序不足（据返回块推断）。"
+    },
+    {
+      "id": "lora_initialization",
+      "gold": "2106.09685v2.pdf p4 A 高斯初始化、B 为零段落",
+      "observed": "返回限制、性能与矩阵使用段落，初始化原段未进入前 8。",
+      "cause": "中文“初始化/初始增量”与英文 initialization/zero 词项匹配及排序不足（据返回块推断）。"
+    },
+    {
+      "id": "flash_memory",
+      "gold": "2205.14135v2.pdf p1 tiling/HBM/SRAM 段落",
+      "observed": "返回大量 Load HBM to SRAM 算法行及 p2 图注，但未命中 p1 的完整目标。p2 图注确实说明分块机制；固定片段指标可能低估可用语义证据。",
+      "cause": "重复内存词项的算法行优先；固定位置目标的限制。"
+    },
+    {
+      "id": "flash_speed",
+      "gold": "2205.14135v2.pdf p2 图1图注 7.6×",
+      "observed": "返回 p8 的完整模型训练时间表等，未取到图1 attention 子计算加速图注。",
+      "cause": "训练吞吐与 attention 内核加速的词项混淆（据返回块推断）。"
+    },
+    {
+      "id": "gpt4_exam",
+      "gold": "2303.08774v6.pdf p5 Uniform Bar Exam 表行 298/400、约90th",
+      "observed": "返回前10%的正文和表1图注，实际含 298/400 的表行未进入前 8。",
+      "cause": "概述/图注优先，数值表行召回不足（据返回块推断）。"
+    },
+    {
+      "id": "deepseek_parameters",
+      "gold": "2412.19437v1.pdf p1 671B total、37B activated",
+      "observed": "无来源；返回“没有问题明确指定的版本或 arXiv ID”警告。",
+      "cause": "确认的范围解析缺陷：_scope_papers 将模型名称 DeepSeek-V3 中的 V3 当成文献 v3，排除实际 v1 PDF。本轮保留算法。"
+    },
+    {
+      "id": "deepseek_cost_scope",
+      "gold": "2412.19437v1.pdf p5 2.788M GPU hours、排除前期研究与消融",
+      "observed": "无来源；同样返回版本缺失警告。",
+      "cause": "与 deepseek_parameters 相同的模型名称/文献版本混淆。"
+    },
+    {
+      "id": "cross_pretraining_tokens",
+      "gold": "2307.09288v2.pdf p5 2 trillion；2412.15115v2.pdf p1 18 trillion",
+      "observed": "两文均有返回，但指定两段均未命中。Llama p6 图注已有等价 2T Tokens 表述；Qwen 返回预训练数据与上下文长度等段落，未命中18T。",
+      "cause": "跨论文覆盖不保证目标事实覆盖；固定位置指标也漏计 Llama 等价证据。"
+    },
+    {
+      "id": "cross_memory_methods",
+      "gold": "2106.09685v2.pdf p1 与 2205.14135v2.pdf p1",
+      "observed": "LoRA 目标命中。FlashAttention 返回内存层次/增长曲线和摘要前半块，但未取包含 tiling 的相邻后半块。",
+      "cause": "块边界及比较词项排序不足（据返回块推断）。"
+    },
+    {
+      "id": "explicit_version_scope",
+      "gold": "1707.06347v2.pdf p3 epsilon=0.2",
+      "observed": "仅返回指定 v2，零范围泄漏；超参数表标题与实验说明在前，核心 p3 段落未命中。",
+      "cause": "版本范围约束正确，超参数问题词项排序不足（据返回块推断）。"
+    }
+  ],
+  "reproduce_first_run_check": ".venv/bin/python scripts/evaluate_retrieval.py --fixture tests/fixtures/retrieval_holdout.json --freeze-file tests/fixtures/retrieval_holdout.freeze.json --output /tmp/retrieval-holdout.json",
+  "reproduce_regression_check": ".venv/bin/python scripts/evaluate_retrieval.py --fixture tests/fixtures/retrieval_holdout.json --baseline tests/fixtures/retrieval_holdout.baseline.json --output /tmp/retrieval-holdout-regression.json",
+  "exit_semantics": "无 baseline 时当前结果 exit 1；带 baseline 的 exit 0 仅表示未相对首轮退步，summary 明确 regression_check=passed 与 known_failed_cases=10，不代表22题全过。未来检索算法变更应使用 baseline 模式而不添加锁定原实现的 --freeze-file。"
+}

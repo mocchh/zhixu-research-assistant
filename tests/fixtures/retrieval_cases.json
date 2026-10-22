@@ -1,0 +1,688 @@
+{
+  "schema_version": 1,
+  "methodology": "Gold consists of source page/snippet targets rather than generated answers; the evaluation runner makes no model API calls. Targets were read in existing parsed text and cross-checked against native PDF text; scan page 7 was visually checked. Page numbers are one-based physical PDF pages. This is a fixed development acceptance set, not a held-out benchmark. OCR cases test retrieval location, not OCR accuracy.",
+  "k": 8,
+  "documents": [
+    {
+      "filename": "1607.06450v1.pdf",
+      "sha256": "c464f839fb8d59f7fde92f9b4caa67c2d1f2f196b88f93fb60502249df0aaef7"
+    },
+    {
+      "filename": "1706.03762v1.pdf",
+      "sha256": "0a9bff1be3575cf9fe26a4a3d3a9175bc791ecec90de8b9deba4cff75d2b9476"
+    },
+    {
+      "filename": "1706.03762v1_img.pdf",
+      "sha256": "64094fe169dd4ff454f579e9f197298df1c118c24b71b1f1ca8bb218c9e4801d"
+    },
+    {
+      "filename": "1706.03762v7.pdf",
+      "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+    },
+    {
+      "filename": "2002.04745v2.pdf",
+      "sha256": "e1fa0519ed8e09a676d56c983e99ead5effd7ef840ae86a186729287469bf883"
+    },
+    {
+      "filename": "2005.14165v4.pdf",
+      "sha256": "97fd272f1fdfc18677462d0292f5fbf26ca86b4d1b485c2dba03269b643a0e83"
+    },
+    {
+      "filename": "N19-1423.pdf",
+      "sha256": "987545ffb087f1ece898142c403a516baeabeb70ce19089397fac6f7db12c3d4"
+    },
+    {
+      "filename": "UnderstandingDeepLearning_02_09_26_C.pdf",
+      "sha256": "f8237d393163900fa8e43210e680a3f987b45ccac7750b372e156fae3df0bf32"
+    },
+    {
+      "filename": "language_understanding_paper.pdf",
+      "sha256": "eb81a65e0856bd38e855e1f1de6ee12e7c3eb92ae05c8270d345a475beb631d0"
+    }
+  ],
+  "cases": [
+    {
+      "id": "author_order",
+      "question": "第六位作者及其机构是什么？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 1,
+          "terms": [
+            "Aidan N. Gomez",
+            "University of Toronto"
+          ]
+        }
+      ],
+      "category": "author"
+    },
+    {
+      "id": "author_footnote",
+      "question": "Aidan 的工作在哪里完成？请看作者脚注。",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 1,
+          "terms": [
+            "Work performed while at Google Brain"
+          ]
+        }
+      ],
+      "category": "author"
+    },
+    {
+      "id": "adam_parameters",
+      "question": "Adam 优化器的 β1、β2 与 ε 参数是什么？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 7,
+          "terms": [
+            "β1 = 0.9",
+            "β2 = 0.98"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "adam_followup",
+      "question": "具体是多少？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 7,
+          "terms": [
+            "β1 = 0.9",
+            "β2 = 0.98"
+          ]
+        }
+      ],
+      "history": [
+        {
+          "role": "user",
+          "content": "Adam 优化器使用哪些超参数？"
+        },
+        {
+          "role": "assistant",
+          "content": "先核对原文。"
+        }
+      ],
+      "category": "followup"
+    },
+    {
+      "id": "gpu_hardware",
+      "question": "训练使用多少GPU？具体是什么显卡？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 7,
+          "terms": [
+            "8 NVIDIA P100 GPUs"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "training_time",
+      "question": "base model 的训练步数、耗时和每步秒数是多少？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 7,
+          "terms": [
+            "100,000 steps or 12 hours",
+            "0.4 seconds"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "bleu_comparison",
+      "question": "表2里英德任务 Transformer big 与 ConvS2S Ensemble 的 BLEU 分数是多少？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 8,
+          "terms": [
+            "Transformer (big)",
+            "28.4",
+            "ConvS2S Ensemble",
+            "26.36"
+          ]
+        }
+      ],
+      "category": "table"
+    },
+    {
+      "id": "bleu_internal_conflict",
+      "question": "v7 英法 BLEU 的表2数值和正文数值是否一致？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 8,
+          "terms": [
+            "Transformer (big)",
+            "41.8"
+          ]
+        },
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 8,
+          "terms": [
+            "BLEU score of 41.0"
+          ]
+        }
+      ],
+      "category": "conflict"
+    },
+    {
+      "id": "warmup_steps",
+      "question": "学习率预热 warmup_steps 持续多少步？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 7,
+          "terms": [
+            "warmup_steps = 4000"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "label_smoothing",
+      "question": "标签平滑 label smoothing 的 εls 参数是多少？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 8,
+          "terms": [
+            "label smoothing",
+            "0.1"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "dropout",
+      "question": "基础模型残差 dropout 概率 Pdrop 是多少？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 8,
+          "terms": [
+            "Residual Dropout",
+            "Pdrop = 0.1"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "layernorm_placement",
+      "question": "LayerNorm 与残差连接的前后位置和公式是什么？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 3,
+          "terms": [
+            "LayerNorm(x + Sublayer(x))"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "layernorm_reference",
+      "question": "参考文献中 Layer normalization 的作者与年份是什么？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 10,
+          "terms": [
+            "Jimmy Lei Ba",
+            "Jamie Ryan Kiros",
+            "2016"
+          ]
+        }
+      ],
+      "category": "reference"
+    },
+    {
+      "id": "adam_reference",
+      "question": "参考文献中的 Adam 论文作者和发表场合是什么？",
+      "filenames": [
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 11,
+          "terms": [
+            "Diederik Kingma and Jimmy Ba",
+            "ICLR, 2015"
+          ]
+        }
+      ],
+      "category": "reference"
+    },
+    {
+      "id": "ln_definition",
+      "question": "Layer normalization 与 batch normalization 的 mini-batch 依赖有什么区别？",
+      "filenames": [
+        "1607.06450v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1607.06450v1.pdf",
+          "page": 1,
+          "terms": [
+            "single training case",
+            "mini-batch size"
+          ]
+        }
+      ],
+      "category": "definition"
+    },
+    {
+      "id": "pre_post_ln",
+      "question": "Pre-LN 与 Post-LN 的位置和 warm-up 需求有何不同？",
+      "filenames": [
+        "2002.04745v2.pdf"
+      ],
+      "expected": [
+        {
+          "alternatives": [
+            {
+              "filename": "2002.04745v2.pdf",
+              "page": 1,
+              "terms": [
+                "Pre-LN",
+                "Post-LN",
+                "gradients are well-behaved"
+              ]
+            },
+            {
+              "filename": "2002.04745v2.pdf",
+              "page": 8,
+              "terms": [
+                "outside the residual blocks",
+                "inside the residual blocks",
+                "without the warm-up stage"
+              ]
+            },
+            {
+              "all_of": [
+                {
+                  "filename": "2002.04745v2.pdf",
+                  "page": 5,
+                  "terms": [
+                    "between the residual blocks",
+                    "inside the residual connection"
+                  ]
+                },
+                {
+                  "filename": "2002.04745v2.pdf",
+                  "page": 6,
+                  "terms": [
+                    "large learning rate without",
+                    "warm-up may make the training unstable"
+                  ]
+                },
+                {
+                  "filename": "2002.04745v2.pdf",
+                  "page": 8,
+                  "terms": [
+                    "warm-up stage can be removed for the Pre-LN model"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "category": "comparison",
+      "note": "Equivalent evidence was checked directly in PDF text: the p1 abstract or p8 conclusion supports both aspects; alternatively all three passages are required: p5 residual placement, p6 Post-LN unstable without warm-up, and p8 removal for Pre-LN. A location-only or warm-up-only passage does not pass."
+    },
+    {
+      "id": "multi_paper_normalization",
+      "question": "比较两篇论文的 LayerNorm residual 位置及 warm-up 说明。",
+      "filenames": [
+        "1706.03762v7.pdf",
+        "2002.04745v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 3,
+          "terms": [
+            "LayerNorm(x + Sublayer(x))"
+          ]
+        },
+        {
+          "alternatives": [
+            {
+              "filename": "2002.04745v2.pdf",
+              "page": 1,
+              "terms": [
+                "Pre-LN",
+                "Post-LN"
+              ]
+            },
+            {
+              "filename": "2002.04745v2.pdf",
+              "page": 8,
+              "terms": [
+                "outside the residual blocks",
+                "inside the residual blocks",
+                "without the warm-up stage"
+              ]
+            }
+          ]
+        }
+      ],
+      "category": "multi_paper",
+      "note": "The page-8 conclusion was read directly in the PDF: outside/inside residual blocks and without warm-up jointly support the same location/training claim as the abstract. Either complete evidence passage is accepted."
+    },
+    {
+      "id": "multi_context",
+      "question": "比较两篇论文的上下文窗口 context window 和 sequence length。",
+      "filenames": [
+        "language_understanding_paper.pdf",
+        "2005.14165v4.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "language_understanding_paper.pdf",
+          "page": 5,
+          "terms": [
+            "sequences of 512 tokens"
+          ]
+        },
+        {
+          "filename": "2005.14165v4.pdf",
+          "page": 8,
+          "terms": [
+            "context window of nctx = 2048 tokens"
+          ]
+        }
+      ],
+      "category": "multi_paper"
+    },
+    {
+      "id": "bert_architecture",
+      "question": "BERT 使用的 Transformer encoder 是什么架构？",
+      "filenames": [
+        "N19-1423.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "N19-1423.pdf",
+          "page": 3,
+          "terms": [
+            "multi-layer bidirectional Transformer"
+          ]
+        }
+      ],
+      "category": "architecture"
+    },
+    {
+      "id": "gpt1_parameters",
+      "question": "12-layer decoder 的维度和 attention heads 是多少？",
+      "filenames": [
+        "language_understanding_paper.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "language_understanding_paper.pdf",
+          "page": 5,
+          "terms": [
+            "768 dimensional states and 12",
+            "attention heads"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "gpt3_context",
+      "question": "GPT-3 context window 的 token 数是多少？",
+      "filenames": [
+        "2005.14165v4.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2005.14165v4.pdf",
+          "page": 8,
+          "terms": [
+            "context window of nctx = 2048 tokens"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "scan_gpu",
+      "question": "扫描件训练硬件 NVIDIA GPUs 是多少？",
+      "filenames": [
+        "1706.03762v1_img.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v1_img.pdf",
+          "page": 7,
+          "terms": [
+            "NVIDIA",
+            "GPUs"
+          ]
+        }
+      ],
+      "category": "scan",
+      "note": "只验证召回真实OCR区域，不把P1oo等识别误差改写成P100；数值需看图复核。"
+    },
+    {
+      "id": "scan_adam",
+      "question": "扫描件 Adam optimizer 的 beta 参数是多少？",
+      "filenames": [
+        "1706.03762v1_img.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v1_img.pdf",
+          "page": 7,
+          "terms": [
+            "Adam optimizer",
+            "0.98"
+          ]
+        }
+      ],
+      "category": "scan"
+    },
+    {
+      "id": "book_overfit",
+      "question": "书中 overfitting 如何描述训练噪声以及过拟合？",
+      "filenames": [
+        "UnderstandingDeepLearning_02_09_26_C.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "UnderstandingDeepLearning_02_09_26_C.pdf",
+          "page": 139,
+          "terms": [
+            "modeling the noise",
+            "overfitting"
+          ]
+        }
+      ],
+      "category": "long_book"
+    },
+    {
+      "id": "book_adam",
+      "question": "书中 Adam 如何 combines momentum 和 RMSProp 的思想？",
+      "filenames": [
+        "UnderstandingDeepLearning_02_09_26_C.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "UnderstandingDeepLearning_02_09_26_C.pdf",
+          "page": 107,
+          "terms": [
+            "combines the ideas of momentum",
+            "RMSProp"
+          ]
+        }
+      ],
+      "category": "long_book"
+    },
+    {
+      "id": "book_sgd",
+      "question": "书中随机梯度下降为什么每次选择 random subset 和 minibatch？",
+      "filenames": [
+        "UnderstandingDeepLearning_02_09_26_C.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "UnderstandingDeepLearning_02_09_26_C.pdf",
+          "page": 99,
+          "terms": [
+            "chooses a random subset",
+            "minibatch"
+          ]
+        }
+      ],
+      "category": "long_book"
+    },
+    {
+      "id": "version_v1_scope",
+      "question": "v1 的英法 BLEU 分数是多少？",
+      "filenames": [
+        "1706.03762v1.pdf",
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v1.pdf",
+          "page": 1,
+          "terms": [
+            "BLEU score of 41.0"
+          ]
+        }
+      ],
+      "category": "version",
+      "allowed_filenames": [
+        "1706.03762v1.pdf"
+      ]
+    },
+    {
+      "id": "version_v7_scope",
+      "question": "1706.03762v7 摘要中的英法 BLEU 是多少？",
+      "filenames": [
+        "1706.03762v1.pdf",
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 1,
+          "terms": [
+            "BLEU score of 41.8"
+          ]
+        }
+      ],
+      "category": "version",
+      "allowed_filenames": [
+        "1706.03762v7.pdf"
+      ]
+    },
+    {
+      "id": "version_comparison",
+      "question": "比较 v1 与 v7 英法翻译 BLEU 的结果。",
+      "filenames": [
+        "1706.03762v1.pdf",
+        "1706.03762v7.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1706.03762v1.pdf",
+          "page": 1,
+          "terms": [
+            "BLEU score of 41.0"
+          ]
+        },
+        {
+          "filename": "1706.03762v7.pdf",
+          "page": 1,
+          "terms": [
+            "BLEU score of 41.8"
+          ]
+        }
+      ],
+      "category": "version"
+    },
+    {
+      "id": "missing_gpt2_original",
+      "question": "GPT-2 原论文的作者和上下文窗口是多少？给出原文引用。",
+      "filenames": [
+        "language_understanding_paper.pdf",
+        "2005.14165v4.pdf"
+      ],
+      "expected": [],
+      "category": "missing",
+      "expect_no_sources": true
+    },
+    {
+      "id": "missing_version",
+      "question": "1706.03762v9 的 Adam 参数是多少？",
+      "filenames": [
+        "1706.03762v1.pdf",
+        "1706.03762v7.pdf"
+      ],
+      "expected": [],
+      "category": "missing",
+      "expect_no_sources": true
+    }
+  ]
+}

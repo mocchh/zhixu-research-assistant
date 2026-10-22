@@ -1,0 +1,758 @@
+{
+  "method": "BM25 with deterministic lexical/layout reranking; no embedding or model calls",
+  "match_protocol": "table_cells_v2",
+  "fixture_kind": "independent_ai_source_checked_unseen_v3",
+  "categories": {
+    "formula": {
+      "cases": 1,
+      "passed": 0
+    },
+    "mechanism": {
+      "cases": 2,
+      "passed": 2
+    },
+    "missing_paper": {
+      "cases": 1,
+      "passed": 0
+    },
+    "missing_version": {
+      "cases": 1,
+      "passed": 1
+    },
+    "multi_paper": {
+      "cases": 2,
+      "passed": 2
+    },
+    "multi_stage": {
+      "cases": 1,
+      "passed": 1
+    },
+    "table": {
+      "cases": 4,
+      "passed": 3
+    }
+  },
+  "k": 8,
+  "case_count": 12,
+  "passed_cases": 9,
+  "recall_at_k": 0.8571428571428571,
+  "gold_targets": 14,
+  "gold_hits": 12,
+  "gold_available": 14,
+  "locator_integrity": 1.0,
+  "returned_sources": 80,
+  "version_or_scope_leaks": 0,
+  "missing_source_passes": 1,
+  "missing_source_cases": 2,
+  "median_query_ms_including_index_builds": 23.82,
+  "cache_measurement": {
+    "document": "2103.00020v1.pdf",
+    "blocks": 2047,
+    "cold_ms": 70.59,
+    "warm_median_ms": 1.29,
+    "cache_info": {
+      "hits": 5,
+      "misses": 1,
+      "maxsize": 6,
+      "currsize": 1
+    }
+  },
+  "limits": [
+    "Gold targets are specific page-and-snippet matches; correct unlisted passages may still be misses.",
+    "Locator integrity means original block geometry was retained, not that OCR or formula recognition is correct.",
+    "No model answer correctness or semantic entailment is measured."
+  ],
+  "cases": [
+    {
+      "id": "unseen_v3_vit_image_patch_and_head",
+      "category": "formula",
+      "passed": false,
+      "gold_available": [
+        true,
+        true
+      ],
+      "gold_retrieved": [
+        true,
+        false
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 3,
+          "id": "2010.11929v2.pdf:3:27",
+          "score": 44.29885
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 7,
+          "id": "2010.11929v2.pdf:7:30",
+          "score": 15.74082
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 8,
+          "id": "2010.11929v2.pdf:8:2",
+          "score": 13.17026
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 9,
+          "id": "2010.11929v2.pdf:9:24",
+          "score": 12.83909
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 7,
+          "id": "2010.11929v2.pdf:7:11",
+          "score": 11.90051
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 6,
+          "id": "2010.11929v2.pdf:6:22",
+          "score": 11.40227
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 4,
+          "id": "2010.11929v2.pdf:4:16",
+          "score": 10.54398
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 5,
+          "id": "2010.11929v2.pdf:5:9",
+          "score": 9.67898
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_clip_contrastive_pairs",
+      "category": "mechanism",
+      "passed": true,
+      "gold_available": [
+        true
+      ],
+      "gold_retrieved": [
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 4,
+          "id": "2103.00020v1.pdf:4:6",
+          "score": 18.65939
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 4,
+          "id": "2103.00020v1.pdf:4:7",
+          "score": 12.1286
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 7,
+          "id": "2103.00020v1.pdf:7:2",
+          "score": 11.66676
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 4,
+          "id": "2103.00020v1.pdf:4:9",
+          "score": 8.44987
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 7,
+          "id": "2103.00020v1.pdf:7:1",
+          "score": 8.00658
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 7,
+          "id": "2103.00020v1.pdf:7:3",
+          "score": 6.96581
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 7,
+          "id": "2103.00020v1.pdf:7:4",
+          "score": 6.76087
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 6,
+          "id": "2103.00020v1.pdf:6:12",
+          "score": 5.40929
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_llava_two_training_stages",
+      "category": "multi_stage",
+      "passed": true,
+      "gold_available": [
+        true,
+        true
+      ],
+      "gold_retrieved": [
+        true,
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 19,
+          "id": "2304.08485v2.pdf:19:9",
+          "score": 8.88797
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "id": "2304.08485v2.pdf:5:9",
+          "score": 8.55557
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 15,
+          "id": "2304.08485v2.pdf:15:0",
+          "score": 7.00117
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "id": "2304.08485v2.pdf:5:8",
+          "score": 6.66528
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 1,
+          "id": "2304.08485v2.pdf:1:7",
+          "score": 5.99576
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "id": "2304.08485v2.pdf:5:7",
+          "score": 5.52934
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 14,
+          "id": "2304.08485v2.pdf:14:12",
+          "score": 5.43753
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 6,
+          "id": "2304.08485v2.pdf:6:7",
+          "score": 4.92114
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_qlora_double_quantization_stages",
+      "category": "mechanism",
+      "passed": true,
+      "gold_available": [
+        true
+      ],
+      "gold_retrieved": [
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 5,
+          "id": "2305.14314v1.pdf:5:1",
+          "score": 31.45125
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 7,
+          "id": "2305.14314v1.pdf:7:6",
+          "score": 20.84808
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 5,
+          "id": "2305.14314v1.pdf:5:6",
+          "score": 19.60657
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 5,
+          "id": "2305.14314v1.pdf:5:20",
+          "score": 15.81863
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 1,
+          "id": "2305.14314v1.pdf:1:5",
+          "score": 14.29821
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 7,
+          "id": "2305.14314v1.pdf:7:7",
+          "score": 12.38183
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 5,
+          "id": "2305.14314v1.pdf:5:5",
+          "score": 10.08873
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 4,
+          "id": "2305.14314v1.pdf:4:2",
+          "score": 9.99009
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_vit_model_variant_table",
+      "category": "table",
+      "passed": true,
+      "gold_available": [
+        true
+      ],
+      "gold_retrieved": [
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 5,
+          "id": "2010.11929v2.pdf:5:1",
+          "score": 47.80786
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 18,
+          "id": "2010.11929v2.pdf:18:78",
+          "score": 13.38003
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 9,
+          "id": "2010.11929v2.pdf:9:17",
+          "score": 12.68044
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 20,
+          "id": "2010.11929v2.pdf:20:32",
+          "score": 12.57459
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 9,
+          "id": "2010.11929v2.pdf:9:23",
+          "score": 11.88134
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 8,
+          "id": "2010.11929v2.pdf:8:8",
+          "score": 11.1434
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 13,
+          "id": "2010.11929v2.pdf:13:65",
+          "score": 11.06902
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 6,
+          "id": "2010.11929v2.pdf:6:22",
+          "score": 10.58794
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_clip_vit_resolution_table",
+      "category": "table",
+      "passed": true,
+      "gold_available": [
+        true
+      ],
+      "gold_retrieved": [
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 48,
+          "id": "2103.00020v1.pdf:48:16",
+          "score": 37.59222
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 37,
+          "id": "2103.00020v1.pdf:37:13",
+          "score": 33.87743
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 48,
+          "id": "2103.00020v1.pdf:48:15",
+          "score": 24.3258
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 37,
+          "id": "2103.00020v1.pdf:37:17",
+          "score": 11.94845
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 5,
+          "id": "2103.00020v1.pdf:5:14",
+          "score": 10.91284
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 48,
+          "id": "2103.00020v1.pdf:48:17",
+          "score": 10.15671
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 38,
+          "id": "2103.00020v1.pdf:38:11",
+          "score": 9.00308
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 15,
+          "id": "2103.00020v1.pdf:15:44",
+          "score": 8.39997
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_llava_coco_ablation_table",
+      "category": "table",
+      "passed": true,
+      "gold_available": [
+        true
+      ],
+      "gold_retrieved": [
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 7,
+          "id": "2304.08485v2.pdf:7:0",
+          "score": 37.80426
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 7,
+          "id": "2304.08485v2.pdf:7:3",
+          "score": 27.45549
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 7,
+          "id": "2304.08485v2.pdf:7:1",
+          "score": 21.79602
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 7,
+          "id": "2304.08485v2.pdf:7:4",
+          "score": 20.02382
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 4,
+          "id": "2304.08485v2.pdf:4:1",
+          "score": 19.33369
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 7,
+          "id": "2304.08485v2.pdf:7:2",
+          "score": 18.79247
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 4,
+          "id": "2304.08485v2.pdf:4:0",
+          "score": 14.81631
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 3,
+          "id": "2304.08485v2.pdf:3:1",
+          "score": 12.38939
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_qlora_mmlu_conditioned_table",
+      "category": "table",
+      "passed": false,
+      "gold_available": [
+        true
+      ],
+      "gold_retrieved": [
+        false
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [],
+      "warnings": [
+        "所选文献中没有问题明确指定的版本或 arXiv ID；不会用其他版本替代。",
+        "BM25 检索未取得相关证据；这不证明原文没有答案，也不能用常识补全。"
+      ]
+    },
+    {
+      "id": "unseen_v3_cross_vit_clip_pretraining",
+      "category": "multi_paper",
+      "passed": true,
+      "gold_available": [
+        true,
+        true
+      ],
+      "gold_retrieved": [
+        true,
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 7,
+          "id": "2010.11929v2.pdf:7:30",
+          "score": 26.10332
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 5,
+          "id": "2103.00020v1.pdf:5:14",
+          "score": 20.77691
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 4,
+          "id": "2103.00020v1.pdf:4:10",
+          "score": 19.46631
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 4,
+          "id": "2010.11929v2.pdf:4:22",
+          "score": 18.89669
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 5,
+          "id": "2010.11929v2.pdf:5:5",
+          "score": 18.48082
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 44,
+          "id": "2103.00020v1.pdf:44:8",
+          "score": 18.34364
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 6,
+          "id": "2010.11929v2.pdf:6:22",
+          "score": 18.33304
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 4,
+          "id": "2103.00020v1.pdf:4:9",
+          "score": 17.5992
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_cross_llava_qlora_updated_weights",
+      "category": "multi_paper",
+      "passed": true,
+      "gold_available": [
+        true,
+        true
+      ],
+      "gold_retrieved": [
+        true,
+        true
+      ],
+      "missing_source_behavior_passed": null,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "id": "2304.08485v2.pdf:5:8",
+          "score": 15.3592
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 5,
+          "id": "2305.14314v1.pdf:5:27",
+          "score": 15.31329
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 5,
+          "id": "2304.08485v2.pdf:5:9",
+          "score": 15.07384
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 16,
+          "id": "2305.14314v1.pdf:16:2",
+          "score": 14.83444
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 2,
+          "id": "2305.14314v1.pdf:2:4",
+          "score": 13.9459
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 3,
+          "id": "2305.14314v1.pdf:3:13",
+          "score": 11.11942
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 19,
+          "id": "2304.08485v2.pdf:19:9",
+          "score": 10.7249
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 15,
+          "id": "2304.08485v2.pdf:15:0",
+          "score": 10.40648
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "id": "unseen_v3_absent_vit_version",
+      "category": "missing_version",
+      "passed": true,
+      "gold_available": [],
+      "gold_retrieved": [],
+      "missing_source_behavior_passed": true,
+      "version_or_scope_leaks": [],
+      "returned": [],
+      "warnings": [
+        "所选文献中没有问题明确指定的版本或 arXiv ID；不会用其他版本替代。",
+        "BM25 检索未取得相关证据；这不证明原文没有答案，也不能用常识补全。"
+      ]
+    },
+    {
+      "id": "unseen_v3_absent_rag_original",
+      "category": "missing_paper",
+      "passed": false,
+      "gold_available": [],
+      "gold_retrieved": [],
+      "missing_source_behavior_passed": false,
+      "version_or_scope_leaks": [],
+      "returned": [
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 6,
+          "id": "2103.00020v1.pdf:6:6",
+          "score": 14.48455
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 8,
+          "id": "2010.11929v2.pdf:8:11",
+          "score": 11.9063
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 23,
+          "id": "2305.14314v1.pdf:23:2",
+          "score": 11.8014
+        },
+        {
+          "filename": "2010.11929v2.pdf",
+          "page": 2,
+          "id": "2010.11929v2.pdf:2:4",
+          "score": 11.33023
+        },
+        {
+          "filename": "2103.00020v1.pdf",
+          "page": 3,
+          "id": "2103.00020v1.pdf:3:28",
+          "score": 9.17626
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 3,
+          "id": "2304.08485v2.pdf:3:3",
+          "score": 6.88491
+        },
+        {
+          "filename": "2305.14314v1.pdf",
+          "page": 8,
+          "id": "2305.14314v1.pdf:8:8",
+          "score": 6.37091
+        },
+        {
+          "filename": "2304.08485v2.pdf",
+          "page": 2,
+          "id": "2304.08485v2.pdf:2:5",
+          "score": 5.14783
+        }
+      ],
+      "warnings": []
+    }
+  ],
+  "parse_source": "pdf_parser_with_hash_cache",
+  "fixture_sha256": "c111cc2f7e1275a6ed3fb238ec89e4c2e921aa184eab5fd7a5fdb42bcc79619c",
+  "retriever_sha256": "8ed5d973c41dc364de2cd993380598e57e0e25a6a840fccbfce12271b8eab401",
+  "parser_sha256": "1fb306e4f12c1b50eef0b9ec60201940f4c7e774b02283f8211fd408272ce465",
+  "evaluator_sha256": "bae9bf0c3c894a8f6a43774a307c6bc7fcce6b539dc16a2ada4bcda2a7e56931",
+  "evaluated_at_utc": "2026-10-02T19:09:12.171170+00:00",
+  "freeze_verification": {
+    "fixture_sha256": "c111cc2f7e1275a6ed3fb238ec89e4c2e921aa184eab5fd7a5fdb42bcc79619c",
+    "retriever_sha256": "8ed5d973c41dc364de2cd993380598e57e0e25a6a840fccbfce12271b8eab401",
+    "evaluator_sha256": "bae9bf0c3c894a8f6a43774a307c6bc7fcce6b539dc16a2ada4bcda2a7e56931",
+    "parser_sha256": "1fb306e4f12c1b50eef0b9ec60201940f4c7e774b02283f8211fd408272ce465",
+    "frozen_at_utc": "2026-10-02T19:08:26.951766+00:00",
+    "verified": true
+  },
+  "run_label": "unseen_v3_pre_change_snapshot_first_run"
+}

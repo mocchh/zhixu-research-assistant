@@ -1,0 +1,451 @@
+{
+  "schema_version": 1,
+  "fixture_kind": "expanded_holdout_no_tuning_this_round",
+  "methodology": "Expanded holdout drawn from existing project PDFs absent from the original 31-case development fixture. Source page/snippet targets were read and checked directly in native PDF text before any retrieval run. AI-assisted source review; not double-blind or independently human-labeled. The retriever is frozen for this round; failed targets remain unchanged. No model API is called. Page numbers are one-based physical PDF pages.",
+  "k": 8,
+  "documents": [
+    {
+      "filename": "1707.06347v2.pdf",
+      "sha256": "e78feadadbdbb0b601b3c2bcc81404722cd431a489b307545f9b7bea1e8c4f5b"
+    },
+    {
+      "filename": "2106.09685v2.pdf",
+      "sha256": "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a"
+    },
+    {
+      "filename": "2205.14135v2.pdf",
+      "sha256": "ca7f9fda10b90fc05dd291a3accc85e9c1a4a860b99b31928dab03ed3fcb14e4"
+    },
+    {
+      "filename": "2303.08774v6.pdf",
+      "sha256": "c33a66dadca2388d7b172d6293b00dc32b71110c6f38fafe0d41112e61be7774"
+    },
+    {
+      "filename": "2307.09288v2.pdf",
+      "sha256": "1df284ce95f783002074bfe8f21d47c646b396ceb1736ea3ec0ea212fc070d91"
+    },
+    {
+      "filename": "2310.06825v1.pdf",
+      "sha256": "dfbac4e7035344b305c947481f2e7e8a02f7a24a563917eb6e47f6591d14c5ae"
+    },
+    {
+      "filename": "2412.15115v2.pdf",
+      "sha256": "73b3292bead3ac8896679d3ac8be87439756faf356566cbda3ccc8a3dc7d79d3"
+    },
+    {
+      "filename": "2412.19437v1.pdf",
+      "sha256": "a67e18a4ca6e2c81abc030239a3ee53705f656b79efab8ce1d6b5ac25630c2a5"
+    }
+  ],
+  "cases": [
+    {
+      "id": "ppo_author",
+      "question": "PPO 论文的第五位作者是谁？",
+      "filenames": [
+        "1707.06347v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1707.06347v2.pdf",
+          "page": 1,
+          "terms": [
+            "Oleg Klimov"
+          ]
+        }
+      ],
+      "category": "author"
+    },
+    {
+      "id": "ppo_clipping",
+      "question": "PPO 的 clipping epsilon 示例设为多少？概率比率为什么要裁剪？",
+      "filenames": [
+        "1707.06347v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1707.06347v2.pdf",
+          "page": 3,
+          "terms": [
+            "epsilon is a hyperparameter",
+            "0.2",
+            "clipping the probability ratio"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "lora_reduction",
+      "question": "LoRA 相比 GPT-3 175B 全量 Adam 微调，训练参数和 GPU 显存需求分别降低多少倍？",
+      "filenames": [
+        "2106.09685v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2106.09685v2.pdf",
+          "page": 1,
+          "terms": [
+            "10,000 times",
+            "3 times"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "lora_forward",
+      "question": "LoRA 的前向传播公式如何把 W0、A、B 和输入 x 合起来？",
+      "filenames": [
+        "2106.09685v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2106.09685v2.pdf",
+          "page": 4,
+          "terms": [
+            "h = W0x + ∆Wx = W0x + BAx"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "lora_initialization",
+      "question": "LoRA 如何初始化矩阵 A 和 B，初始增量为何为零？",
+      "filenames": [
+        "2106.09685v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2106.09685v2.pdf",
+          "page": 4,
+          "terms": [
+            "random Gaussian initialization for A",
+            "zero for B"
+          ]
+        }
+      ],
+      "category": "formula"
+    },
+    {
+      "id": "flash_memory",
+      "question": "FlashAttention 通过什么机制减少 HBM 与 SRAM 之间的读写？",
+      "filenames": [
+        "2205.14135v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2205.14135v2.pdf",
+          "page": 1,
+          "terms": [
+            "uses tiling",
+            "high bandwidth memory (HBM)",
+            "on-chip SRAM"
+          ]
+        }
+      ],
+      "category": "mechanism"
+    },
+    {
+      "id": "flash_speed",
+      "question": "图1中 FlashAttention 相对 PyTorch 的 GPT-2 attention 计算加速是多少倍？",
+      "filenames": [
+        "2205.14135v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2205.14135v2.pdf",
+          "page": 2,
+          "terms": [
+            "7.6",
+            "speedup on the attention computation"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "llama_optimizer",
+      "question": "Llama 2 的 AdamW beta1、beta2、eps 和预热步数分别是多少？",
+      "filenames": [
+        "2307.09288v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2307.09288v2.pdf",
+          "page": 5,
+          "terms": [
+            "0.95",
+            "10−5",
+            "2000 steps"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "llama_training_tokens",
+      "question": "Llama 2 预训练使用了多少 tokens？数据是否来自 Meta 的产品或服务？",
+      "filenames": [
+        "2307.09288v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2307.09288v2.pdf",
+          "page": 5,
+          "terms": [
+            "2 trillion tokens",
+            "does not include data",
+            "products or services"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "mistral_window",
+      "question": "Mistral 7B 表1中的 window_size 和 context_len 各是多少？",
+      "filenames": [
+        "2310.06825v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2310.06825v1.pdf",
+          "page": 2,
+          "terms": [
+            "window_size",
+            "4096",
+            "context_len",
+            "8192"
+          ]
+        }
+      ],
+      "category": "table"
+    },
+    {
+      "id": "mistral_cache",
+      "question": "Mistral 的 rolling buffer cache 如何保存第 i 个 token 的 KV？32k序列减少多少缓存？",
+      "filenames": [
+        "2310.06825v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2310.06825v1.pdf",
+          "page": 2,
+          "terms": [
+            "position i mod W",
+            "8x"
+          ]
+        }
+      ],
+      "category": "mechanism"
+    },
+    {
+      "id": "gpt4_disclosure",
+      "question": "GPT-4 技术报告公开了具体的模型参数规模、硬件和 training compute 吗？请依据报告说明。",
+      "filenames": [
+        "2303.08774v6.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2303.08774v6.pdf",
+          "page": 2,
+          "terms": [
+            "contains no further details",
+            "including model size",
+            "hardware, training compute"
+          ]
+        }
+      ],
+      "category": "missing_fact"
+    },
+    {
+      "id": "gpt4_exam",
+      "question": "GPT-4 在 Uniform Bar Exam 的得分和百分位是什么？",
+      "filenames": [
+        "2303.08774v6.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2303.08774v6.pdf",
+          "page": 5,
+          "terms": [
+            "Uniform Bar Exam",
+            "298 / 400",
+            "90th"
+          ]
+        }
+      ],
+      "category": "table"
+    },
+    {
+      "id": "qwen_training_tokens",
+      "question": "Qwen2.5 的预训练数据从上一代多少 trillion tokens 扩大到多少？",
+      "filenames": [
+        "2412.15115v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2412.15115v2.pdf",
+          "page": 1,
+          "terms": [
+            "7 trillion tokens to 18 trillion tokens"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "qwen_lengths",
+      "question": "Qwen2.5 表1中 7B 模型的 Context / Generation Length 是多少？",
+      "filenames": [
+        "2412.15115v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2412.15115v2.pdf",
+          "page": 3,
+          "terms": [
+            "7B",
+            "128K / 8K",
+            "28 / 4"
+          ]
+        }
+      ],
+      "category": "table"
+    },
+    {
+      "id": "deepseek_parameters",
+      "question": "DeepSeek-V3 总参数量和每个 token 激活的参数量分别是多少？",
+      "filenames": [
+        "2412.19437v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2412.19437v1.pdf",
+          "page": 1,
+          "terms": [
+            "671B total",
+            "37B activated for each token"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "deepseek_cost_scope",
+      "question": "DeepSeek-V3 全部训练花了多少 H800 GPU hours？这个成本是否包含前期研究和消融？",
+      "filenames": [
+        "2412.19437v1.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2412.19437v1.pdf",
+          "page": 5,
+          "terms": [
+            "2.788M GPU hours",
+            "excluding the costs",
+            "prior research and ablation experiments"
+          ]
+        }
+      ],
+      "category": "numeric"
+    },
+    {
+      "id": "cross_pretraining_tokens",
+      "question": "比较 Llama 2 与 Qwen2.5 论文各自报告的预训练 token 数量。",
+      "filenames": [
+        "2307.09288v2.pdf",
+        "2412.15115v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2307.09288v2.pdf",
+          "page": 5,
+          "terms": [
+            "2 trillion tokens"
+          ]
+        },
+        {
+          "filename": "2412.15115v2.pdf",
+          "page": 1,
+          "terms": [
+            "18 trillion tokens"
+          ]
+        }
+      ],
+      "category": "multi_paper"
+    },
+    {
+      "id": "cross_memory_methods",
+      "question": "比较 LoRA 和 FlashAttention 各自降低 GPU memory 开销的方法。",
+      "filenames": [
+        "2106.09685v2.pdf",
+        "2205.14135v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "2106.09685v2.pdf",
+          "page": 1,
+          "terms": [
+            "freezes the",
+            "rank decomposition matrices"
+          ]
+        },
+        {
+          "filename": "2205.14135v2.pdf",
+          "page": 1,
+          "terms": [
+            "uses tiling",
+            "high bandwidth memory (HBM)"
+          ]
+        }
+      ],
+      "category": "multi_paper"
+    },
+    {
+      "id": "explicit_version_scope",
+      "question": "只看 1707.06347v2，PPO 的 epsilon 裁剪超参数示例是什么？",
+      "filenames": [
+        "1707.06347v2.pdf",
+        "2106.09685v2.pdf"
+      ],
+      "expected": [
+        {
+          "filename": "1707.06347v2.pdf",
+          "page": 3,
+          "terms": [
+            "epsilon is a hyperparameter",
+            "0.2"
+          ]
+        }
+      ],
+      "category": "version_scope",
+      "allowed_filenames": [
+        "1707.06347v2.pdf"
+      ]
+    },
+    {
+      "id": "absent_version",
+      "question": "1707.06347v9 的 epsilon 参数是什么？",
+      "filenames": [
+        "1707.06347v2.pdf",
+        "2106.09685v2.pdf"
+      ],
+      "expected": [],
+      "category": "missing_version",
+      "expect_no_sources": true
+    },
+    {
+      "id": "absent_original",
+      "question": "GPT-5 原论文的作者和参数量是什么？给出原文来源。",
+      "filenames": [
+        "2303.08774v6.pdf",
+        "2412.19437v1.pdf"
+      ],
+      "expected": [],
+      "category": "missing_paper",
+      "expect_no_sources": true
+    }
+  ]
+}

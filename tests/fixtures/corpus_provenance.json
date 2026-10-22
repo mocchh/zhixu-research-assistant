@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "path": "pdf/language_models_are_unsupervised_multitask_learners.pdf",
+      "source_page": "https://openai.com/index/better-language-models/",
+      "download_url": "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf",
+      "final_url": "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf",
+      "retrieved_at_utc": "2026-10-02T17:20:10.530423+00:00",
+      "sha256": "d9d852e2894556e73f53cb22b7c605a9643d6f0b19bf604b429ed6192fa24f4e",
+      "bytes": 582775,
+      "title": "Language Models are Unsupervised Multitask Learners",
+      "authors": [
+        "Alec Radford",
+        "Jeffrey Wu",
+        "Rewon Child",
+        "David Luan",
+        "Dario Amodei",
+        "Ilya Sutskever"
+      ],
+      "pages": 24,
+      "publication_year": 2019,
+      "verification": "Followed the Read paper link on the official OpenAI announcement; verified PDF header, title, all six author names and 24 pages with PyMuPDF. No application database import was performed."
+    }
+  ]
+}

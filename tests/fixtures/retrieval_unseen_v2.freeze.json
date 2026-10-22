@@ -1,0 +1,42 @@
+{
+  "frozen_at_utc": "2026-10-02T18:00:47.754299+00:00",
+  "fixture_sha256": "b19c1087592b9dd5ddae5165a92cb93dcb13ec392aec0cc3b512156bfb5d9c4d",
+  "retriever_sha256": "ff65131c1acf06b194d9565e15a1e5fa213028038555a8b7cd62f6843a85f80f",
+  "retriever_snapshot": "test-results/unseen-v2-baseline/intelligence.py",
+  "parser_sha256": "ea63f1f3d28c618d8eccad4e3afcade5f4d54d41250a1caefce29facf3523b2c",
+  "documents": 4,
+  "cases": 17,
+  "gold_targets": 19,
+  "source_leaves_verified": 22,
+  "review_kind": "independent AI-assisted original-PDF verification; not human blind testing",
+  "information_boundary": "No case questions, PDF scope, source targets or baseline results supplied to algorithm agent before its implementation freeze. No retrieval run occurred before this manifest was written.",
+  "visual_checks": [
+    {
+      "filename": "1910.02054v3.pdf",
+      "pages": [
+        11
+      ]
+    },
+    {
+      "filename": "1910.10683v4.pdf",
+      "pages": [
+        24
+      ]
+    },
+    {
+      "filename": "2101.03961v3.pdf",
+      "pages": [
+        6,
+        9,
+        10
+      ]
+    },
+    {
+      "filename": "2305.18290v3.pdf",
+      "pages": [
+        9,
+        20
+      ]
+    }
+  ]
+}
