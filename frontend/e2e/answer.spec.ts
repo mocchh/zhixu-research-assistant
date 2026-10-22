@@ -4,13 +4,21 @@ import { test, expect, cleanWorkspace, readyPaper, nav, selectPaper, question, a
 test.beforeEach(async ({ request }) => cleanWorkspace(request));
 
 async function configureLocalModel(page: Page, request: APIRequestContext, baseURL: string, model: string) {
+  const current = await (await request.get('/api/settings')).json();
+  const targetUrl = `${baseURL}/__e2e__/model`;
   await page.goto('/');
   await page.locator('.settings-nav').click();
-  await page.getByLabel('API 地址').fill(`${baseURL}/__e2e__/model`);
+  await expect(page.getByLabel('API 地址')).toHaveValue(current.base_url);
+  await page.getByLabel('API 地址').fill(targetUrl);
+  await expect(page.getByLabel('API 地址')).toHaveValue(targetUrl);
   await page.getByLabel('模型名称').fill(model);
+  await expect(page.getByLabel('模型名称')).toHaveValue(model);
   await page.locator('#model-key').fill('e2e-contract-only');
   await page.getByRole('button', { name: '保存配置', exact: true }).click();
-  await expect.poll(async () => (await (await request.get('/api/health')).json()).model_configured).toBe(true);
+  await expect.poll(async () => {
+    const saved = await (await request.get('/api/settings')).json();
+    return { base_url: saved.base_url, model: saved.model, has_api_key: saved.has_api_key };
+  }).toEqual({ base_url: targetUrl, model, has_api_key: true });
   await nav(page, '文献库');
   await selectPaper(page);
   await nav(page, '文献问答');

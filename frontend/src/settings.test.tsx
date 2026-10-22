@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { useLayoutEffect } from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
@@ -17,6 +18,69 @@ beforeEach(() => {
   state.refresh.mockResolvedValue(undefined);
 });
 afterEach(cleanup);
+
+it('never exposes an editable empty form before the initial configuration is loaded', async () => {
+  let finish!: (value: typeof saved) => void;
+  const load = new Promise<typeof saved>(resolve => { finish = resolve; });
+  state.api.mockImplementation(async (_path: string, options?: RequestInit) => options?.method === 'PUT'
+    ? { ...saved, ...JSON.parse(String(options.body)), has_api_key: false }
+    : load);
+  let editableAtFirstCommit: string[] | undefined;
+  function FirstCommitProbe() {
+    // Observe the committed DOM before passive effects can hide a stale form.
+    useLayoutEffect(() => {
+      editableAtFirstCommit = [...document.querySelectorAll<HTMLInputElement>('.settings-card input')]
+        .filter(input => !input.disabled).map(input => input.id);
+    }, []);
+    return <Settings />;
+  }
+  render(<FirstCommitProbe />);
+  expect.soft(editableAtFirstCommit).toEqual([]);
+  expect(screen.getByText('正在加载配置…')).toBeTruthy();
+  expect(screen.queryByLabelText('API 地址')).toBeNull();
+  expect(screen.queryByRole('button', { name: '保存配置' })).toBeNull();
+
+  await act(async () => finish(saved));
+  const address = screen.getByLabelText('API 地址') as HTMLInputElement;
+  expect(address.value).toBe(saved.base_url);
+  fireEvent.change(address, { target: { value: 'https://provider-b.invalid/v1' } });
+  fireEvent.click(screen.getByRole('button', { name: '保存配置' }));
+  await waitFor(() => expect(state.refresh).toHaveBeenCalledTimes(1));
+  const [, options] = state.api.mock.calls.find(([, options]) => options?.method === 'PUT')!;
+  expect(JSON.parse(options.body)).toEqual({ model: saved.model, base_url: 'https://provider-b.invalid/v1' });
+  expect(address.value).toBe('https://provider-b.invalid/v1');
+});
+
+it('hides the previous form while reloading settings and saves only edits to the returned configuration', async () => {
+  let finish!: (value: typeof saved) => void;
+  const reload = new Promise<typeof saved>(resolve => { finish = resolve; });
+  let reads = 0;
+  const latest = { ...saved, model: 'latest-model', base_url: 'https://latest-provider.invalid/v1' };
+  state.api.mockImplementation(async (_path: string, options?: RequestInit) => {
+    if (options?.method === 'PUT') return { ...latest, ...JSON.parse(String(options.body)), has_api_key: false };
+    return ++reads === 1 ? saved : reload;
+  });
+  const view = render(<Settings />);
+  expect((await screen.findByLabelText('API 地址') as HTMLInputElement).value).toBe(saved.base_url);
+  state.view = 'library'; view.rerender(<Settings />);
+  state.view = 'settings'; view.rerender(<Settings />);
+  expect(reads).toBe(2);
+  expect(screen.getByText('正在加载配置…')).toBeTruthy();
+  expect(screen.queryByLabelText('API 地址')).toBeNull();
+  expect(screen.queryByLabelText('模型名称')).toBeNull();
+  expect(screen.queryByRole('button', { name: '保存配置' })).toBeNull();
+
+  await act(async () => finish(latest));
+  const address = screen.getByLabelText('API 地址') as HTMLInputElement;
+  expect(address.value).toBe(latest.base_url);
+  expect((screen.getByLabelText('模型名称') as HTMLInputElement).value).toBe(latest.model);
+  fireEvent.change(address, { target: { value: 'https://new-provider.invalid/v1' } });
+  fireEvent.click(screen.getByRole('button', { name: '保存配置' }));
+  await waitFor(() => expect(state.refresh).toHaveBeenCalledTimes(1));
+  const [, options] = state.api.mock.calls.find(([, options]) => options?.method === 'PUT')!;
+  expect(JSON.parse(options.body)).toEqual({ model: latest.model, base_url: 'https://new-provider.invalid/v1' });
+  expect(address.value).toBe('https://new-provider.invalid/v1');
+});
 
 it('explains a changed service and saves without implicitly reusing credentials', async () => {
   render(<Settings />);

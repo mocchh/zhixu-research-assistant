@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { ArrowDownToLine, ArrowRight, ArrowUpRight, BookOpen, Check, CheckCircle2, ExternalLink, GitBranch, KeyRound, Link2, Network, Plus, RefreshCw, Search, Settings2, ShieldCheck } from 'lucide-react';
 import { api, errorText, post, safeUrl, type DiscoveredPaper, type GraphData, type ImportResult, type ModelSettings } from './api';
 import { useWorkspace } from './store';
@@ -63,14 +63,16 @@ export function Settings() {
   const [model, setModel] = useState('');
   const [baseUrl, setBaseUrl] = useState('');
   const [apiKey, setApiKey] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [error, setError] = useState('');
   const [test, setTest] = useState<{ ok: boolean; message: string } | null>(null);
   const requestVersion = useRef(0);
   const mutationInFlight = useRef(false);
-  useEffect(() => {
+  // Hide stale/empty fields before paint on entry. A late settings response
+  // must not replace the value while the user is selecting or typing text.
+  useLayoutEffect(() => {
     if (view !== 'settings') return;
     if (mutationInFlight.current) { setLoading(false); return; }
     const version = ++requestVersion.current;
